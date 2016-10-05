@@ -19,10 +19,10 @@ class CreateAmvsTable extends Migration
             $table->string('genre');
             $table->text('animes');
             $table->string('music');
-            $table->text('description');
-            $table->string('poster');
-            $table->string('bg');
-            $table->string('video');
+            $table->text('description')->nullable();
+            $table->string('poster')->nullable();
+            $table->string('bg')->nullable();
+            $table->string('video')->nullable();
             $table->integer('user_id')->unsigned();
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users');
