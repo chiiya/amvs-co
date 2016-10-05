@@ -24,6 +24,11 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'email'
     ];
+
+    public function amvs()
+    {
+        return $this->hasMany('App\AMV', 'user_id');
+    }
 }
