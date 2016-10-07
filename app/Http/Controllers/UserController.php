@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use App\User;
 use App\Http\Requests;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -44,7 +45,7 @@ class UserController extends Controller
         $user = User::create([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
-            'password' => $request->input('password')
+            'password' => Hash::make($request->input('password'))
         ]);
         return response()
             ->json($user, 201)

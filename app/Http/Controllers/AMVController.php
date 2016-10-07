@@ -52,6 +52,13 @@ class AMVController extends Controller
 
     public function store(Request $request)
     {
+        // Check if user is authorized to store this AMV (i.e. if he is saving the AMV onto his own account)
+        $user = $request->user();
+        if ($user->id != $request->input('user_id')) {
+            return response()
+                ->json(['error' => "Unauthorized. Attempting to store AMV for incorrect user."], 401);
+        }
+
         $amv = AMV::create([
             'title' => $request->input('title'),
             'genre' => $request->input('genre'),
@@ -79,6 +86,11 @@ class AMVController extends Controller
     {
         try {
             $amv = AMV::with('user')->findOrFail($id);
+            $user = $request->user();
+            if ($user->id != $amv->user_id) {
+                return response()
+                ->json(['error' => "Unauthorized. Not the owner of this AMV."], 401);
+            }
 
             $amv->title = $request->input('title');
             $amv->genre = $request->input('genre');
@@ -109,9 +121,14 @@ class AMVController extends Controller
             ->json($amv, 200);
     }
 
-    public function destroy($id) {
+    public function destroy(Request $request, $id) {
         try {
             $amv = AMV::findOrFail($id);
+            $user = $request->user();
+            if ($user->id != $amv->user_id) {
+                return response()
+                ->json(['error' => "Unauthorized. Not the owner of this AMV."], 401);
+            }
             $amv->delete();
             return response()->json(["AMV deleted."], 200);
         } catch (ModelNotFoundException $e) {
