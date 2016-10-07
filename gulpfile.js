@@ -1,5 +1,4 @@
 const elixir = require('laravel-elixir');
-
 require('laravel-elixir-vue-2');
 
 /*
@@ -14,6 +13,12 @@ require('laravel-elixir-vue-2');
  */
 
 elixir(mix => {
-    mix.sass('app.scss')
-       .webpack('app.js');
+    mix.sass('main.scss');
+
+    mix.styles([
+        'resources/assets/vendor/animate.css',
+        'public/css/main.css'
+    ], 'public/css/app.css', './');
+
+    mix.webpack('app.js');
 });

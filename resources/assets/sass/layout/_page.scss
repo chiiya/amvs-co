@@ -1,0 +1,152 @@
+html{
+    height: 100%;
+}
+body {
+    min-height: 100%;
+    background-color: $color-bg;
+    overflow-x:hidden;
+}
+
+.clear {
+    float: none;
+    overflow: hidden;
+    height: 1px;
+    padding-bottom: 1%;
+}
+
+header {
+    ul {
+        margin-bottom: 5rem;
+    }
+}
+
+body.home {
+    header {
+    height: 90%;
+    min-height: 600px;
+    background-image: url(../img/bgs/affinity_bg.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: bottom right;
+    .container {
+        margin-top: 10%;
+    }
+    }
+}
+
+.boxbg {
+    height: 500px;
+    background-color: $color-bg;
+    border-radius: 0.5rem;
+    margin-top: -70px;
+}
+
+@media (max-width: 800px) {
+    .boxbg {
+        border-radius: 0px;
+    }
+    .container {
+        width: 100%;
+    }
+    body.home header .container {
+        margin: 30px;
+    }
+}
+
+.catalogue {
+    margin: 15px 30px;
+}
+
+.row {
+    margin-top: 40px;
+}
+
+.card {
+    width: 330px;
+    height: 530px;
+    background-color: white;
+    -webkit-box-shadow: 0px 14px 35px -15px rgba(0, 0, 0, 0.57);
+    -moz-box-shadow: 0px 14px 35px -15px rgba(0, 0, 0, 0.57);
+    box-shadow: 0px 14px 35px -15px rgba(0, 0, 0, 0.57);
+    margin-top: 40px;
+    img {
+        width: 330px;
+    }
+}
+
+/**
+STARTPAGE
+**/
+
+body.start {
+    header {
+        .container {
+            margin: 0 auto;
+            text-align: center;
+        }
+    }
+    a {
+        text-align: center;
+        display: inline-block;
+        margin-top: 15px;
+        color: darken($color-primary, 30%);
+        &:hover, &:active, &:focus, &:visited {
+            text-decoration: none;
+            color: darken($color-primary, 15%);
+        }
+    }
+}
+
+
+body.details, body.start {
+    background-color: #100b0f;
+    header {
+        .container {
+            margin-top: 5%;
+        }
+    }
+    .row {
+        margin-bottom: 5%;
+    }
+    p {
+        color: $color-text-light;
+    }
+
+} 
+
+
+/**
+DETAILPAGE
+**/
+
+body.details {
+    .embed-container {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        max-width: 100%;
+    }
+    .embed-container iframe,
+    .embed-container object,
+    .embed-container embed {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    header {
+        a {
+            font-family: $font-secondary;
+        font-size: 1.8rem;
+        color: white;
+        text-decoration: none;
+        &:hover, :active, :focus {
+            text-decoration: none;
+            color: $color-text-light;
+        } 
+        }
+    }
+}

@@ -1,0 +1,41 @@
+.button {
+    background-color: $color-primary;
+    border-radius: 2rem;
+    padding: 13px 30px;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
+    font-family: $font-secondary;
+    font-size: 1.8rem;
+    text-decoration: none;
+
+    &:hover, :focus, :active {
+        background-color: darken($color-primary, 10%);
+        text-decoration: none;
+        color: white;
+    }
+
+    &-small {
+        color: $color-text-dark;
+        padding: 10px 20px;
+        font-size: 1.6rem;
+        border-radius: 1rem;
+        border: 1px solid $color-text-dark;
+        background-color: transparent;
+
+        &:hover, :focus, :active {
+            background-color: $color-text-dark;
+            color: white;
+        }
+    }
+}
+
+
+a.button.icon {
+    padding-left: 2rem;
+}
+
+a.button.icon span{
+    padding-left: 36px;
+    background: url(../img/play.png) no-repeat;
+}
