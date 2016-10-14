@@ -20,11 +20,11 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:api');
 
 /* GET find a user: /api/users/ */
-Route::get('/users', 'UserController@find');
+Route::get('/users', 'ApiUserController@find');
 /* GET a user's info: /api/users/{id}/ */
-Route::get('/users/{id}', 'UserController@show');
+Route::get('/users/{id}', 'ApiUserController@show');
 /* POST a new user: /api/users/ */
-Route::post('/users', 'UserController@store');
+Route::post('/users', 'ApiUserController@store');
 
 /* GET all AMVS of a user / find an amv: /api/amvs/ */
 Route::get('/amvs', 'AMVController@index');

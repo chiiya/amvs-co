@@ -11,7 +11,14 @@
 |
 */
 
-Route::get('{all}', function () {
-    return view('index');
-})
-->where(['all' => '.*']);
+
+Route::get('/', function() {
+    if (Auth::check()) return redirect()->route('profile');
+    else return view('index');
+});
+
+Route::group(['middleware' => 'auth'], function () {
+    Route::get('/profile', 'UserController@showProfile')->name('profile');
+});
+
+Route::get('/user/{name}', 'UserController@show');
