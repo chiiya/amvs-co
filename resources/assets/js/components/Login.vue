@@ -8,7 +8,7 @@
                         <input type="password" placeholder="Password" v-model="password" v-on:keyup.enter="submit" required>
                         <input type="submit" value="Login" v-on:click="submit">
                         <p>
-                            <router-link to="signup">Or create a new account.</router-link>
+                            <a href="#" v-on:click="display('signup')">Or create a new account.</a>
                         </p>
                     </form>
                 </div>
@@ -18,6 +18,7 @@
 
 <script>
     export default {
+        props: ['display'],
     data() {
         return {
             password: '',
@@ -34,15 +35,14 @@
 
             data.email = this.email;
             data.password = this.password;
-            console.log(Laravel.csrfToken);
             this.$http.post('/api/auth/token', data, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
                 }
             }).then((response) => {
-                this.error = true;
-                this.errorMessage = "Logged in!";
+                localStorage.setItem('amvcoauth', JSON.stringify(response.body));
+                this.$router.push('/profile');
             }, (response) => {
                 this.error = true;
                 this.errorMessage = "Wrong email/password.";

@@ -19,10 +19,6 @@
   </div>
 </template>
 
-<script>
-</script>
-
-
 <style lang="sass">
   @import "../../sass/base/_variables.scss";
 
@@ -34,45 +30,6 @@
         z-index:1;
     }
   
-  body {
-    background-color: #100b0f;
-  }
-  
-  header {
-    .container {
-      margin: 0 auto;
-      text-align: center;
-    }
-  }
-  
-  a {
-    text-align: center;
-    display: inline-block;
-    margin-top: 15px;
-    color: darken($color-primary, 30%);
-    &:hover,
-    &:active,
-    &:focus,
-    &:visited {
-      text-decoration: none;
-      color: darken($color-primary, 15%);
-    }
-  }
-  
-  header {
-    .container {
-      margin-top: 5%;
-    }
-  }
-  
-  .row {
-    margin-bottom: 5%;
-  }
-  
-  p {
-    color: $color-text-light;
-  }
-
   p.error {
     color: red;
   }

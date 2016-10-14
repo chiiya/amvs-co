@@ -9,7 +9,7 @@
                     <input type="password" placeholder="Confirm Password" v-model="confirmPassword" v-on:keyup.enter="submit" required>
                     <input type="email" placeholder="Email" v-model="email" v-on:keyup.enter="submit" required>
                     <input type="submit" value="Submit" v-on:click="submit">
-                    <p><router-link to="login">Already have an account? Login now.</router-link></p>
+                    <p><a href="#" v-on:click="display('login')">Already have an account? Login now.</a></p>
                 </form>
             </div>
         </div>
@@ -19,6 +19,7 @@
 <script>
 
 export default {
+    props: ['display'],
     data() {
         return {
             username: '',
@@ -47,8 +48,7 @@ export default {
             data.email = this.email;
 
             this.$http.post('/api/users', data).then((response) => {
-                this.error = true;
-                this.errorMessage = response.status + response.body;
+                this.currentView = "signup-successful";
             }, (response) => {
                 this.error = true;
                 this.errorMessage = "Couldn't submit form."

@@ -1,0 +1,36 @@
+body.home {
+    height: 100%;
+}
+body.home {
+    header {
+    height: 90%;
+    min-height: 600px;
+    background-color: $color-form;
+    .container {
+        margin-top: 10%;
+    }
+    }
+}
+
+.boxbg {
+    height: 500px;
+    background-color: $color-bg;
+    border-radius: 0.5rem;
+    margin-top: -70px;
+}
+
+@media (max-width: 800px) {
+    .boxbg {
+        border-radius: 0px;
+    }
+    .container {
+        width: 100%;
+    }
+    body.home header .container {
+        margin: 30px;
+    }
+}
+
+.catalogue {
+    margin: 15px 30px;
+}
