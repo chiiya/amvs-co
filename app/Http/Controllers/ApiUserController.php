@@ -8,7 +8,7 @@ use App\User;
 use App\Http\Requests;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class UserController extends Controller
+class ApiUserController extends Controller
 {
     public function find(Request $request)
     {
@@ -25,11 +25,11 @@ class UserController extends Controller
         }
     }
 
-    public function show($name)
+    public function show($id)
     {
         try {
-            $user = User::where('name', $name)->firstOrFail();
-            return view('profile')->with('user', $user);
+            $user = User::findOrFail($id);
+            return response()->json($user, 200);
         } catch (ModelNotFoundException $e) {
             return response()->json(["User could not be found."], 404);
         }
