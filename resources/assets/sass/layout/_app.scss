@@ -1,0 +1,36 @@
+html {
+    height: 100%;
+    overflow-y: scroll;
+}
+
+body {
+    min-height: 100%;
+    background-color: $color-bg;
+    // overflow-x:hidden;
+}
+
+.clear {
+    float: none;
+    overflow: hidden;
+    height: 1px;
+    padding-bottom: 1%;
+}
+
+.img--circle {
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+}
+
+.material-icons {
+    font-size: inherit;
+    vertical-align: bottom;
+}
+
+a:visited, a:hover, a:focus, a:active {
+    text-decoration: none !important;
+}
+
+[v-cloak] { display:none; }

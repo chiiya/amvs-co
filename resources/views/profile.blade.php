@@ -1,45 +1,42 @@
-<!doctype html>
-<html class="home">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>{{ $user->name }} - AMV Catalogue</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+@extends('layouts.app')
+
+@section('title', $user->name)
+
+@section('meta')
+    @parent
     <meta name="user" id="{{ $user->id }}">
+@endsection
 
-    <link rel="stylesheet" href="/css/normalize.min.css">
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/app.css">
+@section('styles')
+    @parent
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+@endsection
 
-</head>
+@section('content')
+    <div id="app">
+        @include('modules.userbar')
 
-<body class="home" id="home">
-<div id="app">
-<latestamv :amvs="amvs" :user="user"></latestamv>
+        @include('modules.latestAMV')
+        
 @verbatim
-<main>
-    <div class="container boxbg">
-        <div class="clear"></div>
-        <div class="catalogue">
-            <h2 class="border">AMV Catalogue</h2>
-            <div class="row active-with-click">
-                <amvcard v-for="amv in amvs" :amv="amv" :user="user"></amvcard>
+        <main>
+            <div class="container boxbg">
+                <div class="clear"></div>
+                <div class="catalogue">
+                    <h2 class="border">AMV Catalogue</h2>
+                    <div class="row active-with-click">
+                        <amvcard v-for="amv in amvs" :amv="amv" :user="user"></amvcard>
+                    </div>
+                </div>
             </div>
-        </div>
+        </main>
     </div>
-</main>
-</div>
-
 @endverbatim
+@endsection
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment.min.js"></script>
-<script>
-    window.Laravel = { csrfToken: '{{ csrf_token() }}' };
-</script>
-<script src="/js/app.js"></script>
-<script src="/js/profile.js"></script>
-</body>
+@section('scripts')
+    @parent
+    <script src="/js/profile.js"></script>
+@endsection
 
-</html>
+

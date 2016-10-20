@@ -4,7 +4,7 @@
                 <div class="col-md-12">
                     <form>
                         <p class="error" v-if="error">{{ errorMessage }}</p>
-                        <input type="email" placeholder="Email" v-model="email" v-on:keyup.enter="submit" required>
+                        <input type="email" placeholder="Email" v-model="email" v-on:keyup.enter="submit" required autofocus>
                         <input type="password" placeholder="Password" v-model="password" v-on:keyup.enter="submit" required>
                         <input type="submit" value="Login" v-on:click="submit">
                         <p>
@@ -35,14 +35,13 @@
 
             data.email = this.email;
             data.password = this.password;
-            this.$http.post('/api/auth/token', data, {
+            this.$http.post('/login', data, {
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                    'Content-Type': 'application/json'
                 }
             }).then((response) => {
-                localStorage.setItem('amvcoauth', JSON.stringify(response.body));
-                this.$router.push('/profile');
+                console.log(response);
+                window.location.replace('/dashboard');
             }, (response) => {
                 this.error = true;
                 this.errorMessage = "Wrong email/password.";

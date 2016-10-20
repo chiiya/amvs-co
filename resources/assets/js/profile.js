@@ -1,5 +1,5 @@
-import LatestAmv from './components/LatestAmv.vue';
 import AMVCard from './components/AMVCard.vue';
+import moment from 'moment';
 
 const vm = new Vue({
     el: '#app',
@@ -9,7 +9,6 @@ const vm = new Vue({
     },
 
     components: {
-        latestamv: LatestAmv,
         amvcard: AMVCard
     },
 
@@ -26,7 +25,7 @@ const vm = new Vue({
 
                 this.$http.get('/api/amvs?user='+this.user.id).then((response) => {
                     this.amvs = response.body;
-                    this.formatDateAndURL();
+                    this.formatDate();
                 }, (response) => {
                     console.log("Couldn't load AMVs");
                 });
@@ -35,11 +34,10 @@ const vm = new Vue({
                 console.log("Couldn't load user info.");
             });
         },
-        formatDateAndURL() {
+        formatDate() {
             for (var i = 0; i < this.amvs.length; i++) {
                 var date = new Date(this.amvs[i].created_at);
                 this.amvs[i].date = moment(date).format('MMM YYYY');
-                this.amvs[i].url = this.amvs[i].title.replace(" ", "_").toLowerCase();
             }
         }
     }

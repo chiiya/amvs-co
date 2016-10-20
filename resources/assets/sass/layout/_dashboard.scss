@@ -1,0 +1,126 @@
+body.dashboard {
+    .nav--side {
+        &.nav--fixed {
+            overflow: hidden;
+            top: 0;
+            left: 0;
+            position: fixed;
+        }
+        width: 240px;
+        top: 50px;
+        margin: 0;
+        height: calc(100% + 60px);
+        z-index: 10;
+        background-color: $color-sidenav-bg;
+        will-change: left;
+        ul {
+            padding-left: 0;
+            font-family: $font-title;
+        }
+        li:not(:first-of-type) {
+            i {
+                padding-left: 20px;
+                font-size: 2.0rem;
+                vertical-align: bottom;
+                padding-right: 20px;
+            }
+            a {
+                display: block;
+                padding-top: 10px;
+                padding-bottom: 10px;
+                width: 240px;
+                font-size: 1.3rem;
+                font-weight: 900;
+                text-transform: uppercase;
+                color: $color-sidenav-text;
+                &:hover, &.active {
+                    text-decoration: none;
+                    background-color: lighten($color-sidenav-bg, 10%);
+                }
+            }  
+        }
+        li:nth-of-type(2) {
+            margin-top: 30px;
+        }
+    }
+}
+
+.dashboard__content {
+    padding-left: 240px;
+    margin-top: 50px;
+    .col-xs-12 { padding-left: 0; }
+
+    h3 {
+        font-family: $font-title;
+        font-weight: 300;
+        color: $color-sidenav-bg;
+    }
+
+    header + p {
+        font-family: $font-title;
+        font-weight: 300;
+        color: $color-text-light;
+        margin-top: 1em;
+    }
+}
+
+.dashboard__user {
+    margin-top: 50px;
+    text-align: center;
+    padding: 20px 0;
+    background-color: $color-sidenav-user;
+
+    div {
+        margin: 10px auto 0 auto;
+    }
+    h3,
+    p {
+        margin: 0;
+    }
+    a {
+        color: $color-bg;
+        &:hover {
+            text-decoration: none;
+            color: lighten($color-sidenav-user, 40%);
+        }
+    }
+    h3 > a {
+        font-family: $font-title;
+        text-transform: uppercase;
+        font-weight: 900;
+        font-size: 1.6rem;
+    }
+    p > a {
+        font-weight: 300;
+        font-size: 1.4rem;
+    }
+}
+
+
+
+.dashboard__title {
+    background-color: white;
+    height: 90px;
+    width: 100%;
+    border-bottom: 1px solid #e4e4e4;
+    
+    h2 {
+        font-size: 1.8rem;
+        color: $color-text-gray;
+        font-family: $font-title;
+        font-weight: 900;
+    }
+}
+
+.card-image img {
+    max-height: 170px;
+    max-width: 140px;
+}
+
+
+
+.preloader-wrapper { text-align: center; margin: 0 auto; }
+
+.is-right {
+    margin-left: 50px;
+}

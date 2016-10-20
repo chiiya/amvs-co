@@ -38,7 +38,7 @@
             amvs: function(val) {
                 this.latest = val[val.length - 1];
                 if (typeof this.latest !== 'undefined' && this.latest.bg) {
-                    var bg = 'url(img/bgs/' + this.latest.bg + ') bottom right / cover no-repeat';
+                    var bg = 'linear-gradient(rgba(0, 0, 0, 0.5),rgba(0, 0, 0, 0.5)),url(/img/bgs/' + this.latest.bg + ') bottom right / cover no-repeat';
                     document.querySelector('header').style.background = bg;
                 } else if (typeof this.latest == 'undefined') {
                     var header = document.querySelector('header');

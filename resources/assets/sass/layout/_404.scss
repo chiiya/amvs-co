@@ -1,0 +1,47 @@
+body.error404 {
+    background-image: url('/img/crossword.png');
+    background-repeat: repeat;
+    font-family: $font-title;
+    img {
+        margin: 50px auto;
+    }
+    .wrapper {
+        max-width: 650px;
+        margin: 0 auto;
+    }
+    h1 {
+        font-size: 2.4rem;
+        font-weight: 900;
+        color: #685c72;
+        text-transform: uppercase;
+
+    }
+    p {
+        font-size: 2.4rem;
+        font-weight: 300;
+        color: #685c72;
+    }
+    .wrapper ul {
+        margin: 0 0 50px 0;
+        padding-left: 0;
+        li {
+            list-style: none;
+            display: inline-block;
+            font-size: 1.8rem;
+            a {
+                font-weight: 300;
+                color: #685c72;
+                text-decoration: none;
+                &:hover, &:active, &:focus {
+                    text-decoration: none;
+                    color: daarken('#685c72', 30%);
+                } 
+            }
+            
+            &:not(:last-of-type) {
+                padding-right: 20px;
+            }
+        }
+    } 
+    
+}

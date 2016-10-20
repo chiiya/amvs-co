@@ -1,16 +1,22 @@
-body.home {
+body.profile {
     height: 100%;
-}
-body.home {
     header {
-    height: 90%;
-    min-height: 600px;
-    background-color: $color-form;
-    .container {
-        margin-top: 10%;
+        height: 90%;
+        min-height: 600px;
+        background-image: linear-gradient(rgba(0, 0, 0, 0.5),rgba(0, 0, 0, 0.5)),url(/img/bgs/default.jpg);
+        background-size: cover;
+        .container {
+            margin-top: 10%;
+        }
+        ul {
+            margin-bottom: 5rem;
+        }
     }
+    .row {
+        margin-top: 40px;
     }
 }
+
 
 .boxbg {
     height: 500px;
@@ -26,7 +32,7 @@ body.home {
     .container {
         width: 100%;
     }
-    body.home header .container {
+    body.profile header .container {
         margin: 30px;
     }
 }

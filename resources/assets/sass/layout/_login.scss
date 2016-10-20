@@ -1,0 +1,118 @@
+/**
+LOGIN PAGE 
+**/
+
+body.login {
+    background-color: #100b0f;
+    .row {
+        margin-bottom: 5%;
+    }
+    #app {
+        p {
+        color: $color-text-light;
+        }
+        h2 {
+            font-weight: 300;
+        }
+        header {
+            .container {
+                margin-top: 5%;
+                margin: 0 auto;
+                text-align: center;
+            }
+        }
+        a {
+            text-align: center;
+            display: inline-block;
+            margin-top: 15px;
+            color: darken($color-primary, 30%);
+            &:hover, &:active, &:focus {
+                text-decoration: none;
+                color: darken($color-primary, 15%);
+            }
+        }
+    }
+    
+}
+
+div.form {
+    ul {
+        padding: 0;
+        list-style: none;
+        margin: 20px auto 0 auto;
+        max-width: 428px;
+        li {
+            display: inline-block;
+            font-family: $font-secondary;
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            &:nth-child(2) {
+                margin-left: 3rem;
+            }
+        }
+    }
+    .row {
+        margin-top: 20px;
+    }
+    form {
+        margin: 0 auto;
+        max-width: 428px;
+    }
+    input {
+        font-family: $font-title;
+        font-weight: 300;
+        font-size: 1.4rem;
+        border: 0;
+        outline: none;
+        &[type="text"],
+        &[type="password"],
+        &[type="email"] {
+            display: block;
+            width: 100%;
+            border-bottom: 1px solid $color-form;
+            background-color: transparent;
+            color: darken($color-primary, 5%);
+            margin-bottom: 10px;
+            padding: 10px 0px;
+        }
+        &[type="submit"] {
+            padding: 10px 60px;
+            background-color: $color-form;
+            color: lighten($color-form, 30%);
+            ;
+            text-transform: uppercase;
+            border-radius: 5px;
+            &:active,
+            &:hover,
+            &:focus {
+                background-color: lighten($color-form, 10%);
+            }
+        }
+    }
+    ::-webkit-input-placeholder {
+        /* WebKit, Blink, Edge */
+        font-family: $font-secondary;
+        color: lighten($color-form, 10%);
+        text-transform: uppercase;
+    }
+    :-moz-placeholder {
+        /* Mozilla Firefox 4 to 18 */
+        font-family: $font-secondary;
+        color: lighten($color-form, 10%);
+        opacity: 1;
+        text-transform: uppercase;
+    }
+    ::-moz-placeholder {
+        /* Mozilla Firefox 19+ */
+        font-family: $font-secondary;
+        color: lighten($color-form, 10%);
+        opacity: 1;
+        text-transform: uppercase;
+    }
+    :-ms-input-placeholder {
+        /* Internet Explorer 10-11 */
+        font-family: $font-secondary;
+        color: lighten($color-form, 10%);
+        text-transform: uppercase;
+    }
+}

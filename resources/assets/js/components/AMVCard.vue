@@ -3,10 +3,8 @@
         <article class="material-card Blue">
             <h2>
                 <span><a v-bind:href="'/user/' + user.name + '/' + amv.url">{{ amv.title }}</a></span>
-                <strong>
-                    <i class="fa fa-fw fa-star"></i>
-                    {{ amv.genre}} - {{ amv.date }}
-                </strong>
+                <span>{{ genres}}</span>
+                <span>{{ amv.date }}</span>
             </h2>
             <div class="mc-content">
                 <div class="img-container">
@@ -25,7 +23,7 @@
                 </div>
             </div>
             <a class="mc-btn-action" v-on:click="animateCard">
-                <i class="fa fa-bars"></i>
+                <i class="material-icons card-menu">menu</i>
             </a>
         </article>
     </div>
@@ -34,26 +32,32 @@
 <script>
     export default {
         props: ['user', 'amv'],
+
+        computed: {
+            genres: function() {
+                return this.amv.genres.map(function(elem) { return elem.name; }).join(' - ');
+            }
+        },
+
         methods: {
             animateCard(event) {
                 var card = event.currentTarget.parentElement;
-                var icon = event.currentTarget.getElementsByTagName('i');
-                icon[0].classList.add('fa-spin-fast');
+                var icon = event.currentTarget.querySelector('i.card-menu');
+                console.log(icon);
+                icon.classList.add('fa-spin-fast');
 
                 if (card.classList.contains('mc-active')) {
                     card.classList.remove('mc-active');
 
                     window.setTimeout(function () {
-                        icon[0].classList.remove('fa-arrow-left');
-                        icon[0].classList.remove('fa-spin-fast');
-                        icon[0].classList.add('fa-bars');
+                        icon.classList.remove('fa-spin-fast');
+                        icon.innerHTML = "menu";
                     }, 400);
                 } else {
                     card.classList.add('mc-active');
                     window.setTimeout(function () {
-                        icon[0].classList.remove('fa-bars');
-                        icon[0].classList.remove('fa-spin-fast');
-                        icon[0].classList.add('fa-arrow-left');
+                        icon.classList.remove('fa-spin-fast');
+                        icon.innerHTML = "arrow_back";
                     }, 400);
                 }
             }

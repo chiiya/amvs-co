@@ -1,0 +1,45 @@
+/**
+AMV - DETAILPAGE
+**/
+
+body.amv {
+    background-color: #100b0f;
+    header {
+        a {
+            font-family: $font-secondary;
+        font-size: 1.8rem;
+        color: white;
+        text-decoration: none;
+        &:hover, :active, :focus {
+            text-decoration: none;
+            color: $color-text-light;
+        } 
+        }
+        .container {
+            margin-top: 2%;
+        }
+    }
+    .row {
+        margin-top: 2%;
+        margin-bottom: 5%;
+    }
+    p {
+        color: $color-text-light;
+    }
+    .embed-container {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        max-width: 100%;
+    }
+    .embed-container iframe,
+    .embed-container object,
+    .embed-container embed {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+}
