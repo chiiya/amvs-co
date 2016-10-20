@@ -16,15 +16,17 @@ class CreateAmvsTable extends Migration
         Schema::create('amvs', function (Blueprint $table) {
             $table->increments('id');
             $table->string('title');
-            $table->string('genre');
             $table->text('animes');
             $table->string('music');
             $table->text('description')->nullable();
             $table->string('poster')->nullable();
             $table->string('bg')->nullable();
             $table->string('video')->nullable();
-            $table->integer('user_id')->unsigned();
+            $table->string('url');
+            $table->boolean('published');
+            $table->string('download')->nullable();
             $table->timestamps();
+            $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
         });
     }

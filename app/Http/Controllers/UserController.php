@@ -5,34 +5,41 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\User;
+use App\AMV;
 use App\Http\Requests;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class UserController extends Controller
 {
-    public function find(Request $request)
-    {
-        // If a name is submitted via query parameter, search for that name
-        if ($name = $request->get('name')) {
-            try {
-                $user = User::where('name', $name)->firstOrFail();
-                return response()->json($user, 200);
-            } catch (ModelNotFoundException $e) {
-                return response()->json(["A user with that username doesn't exist."], 404);
-            }
-        } else {
-            return response()->json(["Please filter by username."], 400);
-        }
-    }
 
     public function show($name)
     {
         try {
             $user = User::where('name', $name)->firstOrFail();
-            return view('profile')->with('user', $user);
+            $amvs = AMV::where('user_id', $user->id)->with('user')->get();
+            foreach ($amvs as $amv) {
+                $amv->contests->toArray();
+            }
+            $latest = $amvs->last();
+            return view('profile', [
+                'user' => $user,
+                'amvs' => $amvs,
+                'latest' => $latest
+            ]);
         } catch (ModelNotFoundException $e) {
-            return response()->json(["User could not be found."], 404);
+            return view('404');
         }
+    }
+
+    public function showDashboard(Request $request) 
+    {
+        return view('dashboard', [
+            'user' => $request->user()
+        ]);
+    }
+
+    public function showProfile(Request $request) {
+        return 'Logged in as ' . $request->user()->name;
     }
 
     public function store(Request $request)

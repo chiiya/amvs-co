@@ -7,10 +7,6 @@ use Illuminate\Http\Request;
 | API Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
 */
 
 Route::post('/auth/token', 'AuthController@authenticate');
@@ -27,12 +23,17 @@ Route::get('/users/{id}', 'ApiUserController@show');
 Route::post('/users', 'ApiUserController@store');
 
 /* GET all AMVS of a user / find an amv: /api/amvs/ */
-Route::get('/amvs', 'AMVController@index');
+Route::get('/amvs', 'ApiAMVController@index');
 /* GET a specific AMV: /api/amvs/{id}/ */
-Route::get('/amvs/{id}', 'AMVController@show');
+Route::get('/amvs/{id}', 'ApiAMVController@show');
 /* POST a new AMV: /api/amvs/ */
-Route::post('/amvs', 'AMVController@store')->middleware('auth:api');
+Route::post('/amvs', 'ApiAMVController@store')->middleware('auth:api');
 /* PUT update an existing AMV: /api/amvs/{id}/ */
-Route::put('/amvs/{id}', 'AMVController@update')->middleware('auth:api');
+Route::put('/amvs/{id}', 'ApiAMVController@update')->middleware('auth:api');
 /* DELETE an existing AMV: /api/amvs/{id}/ */
-Route::delete('/amvs/{id}', 'AMVController@destroy')->middleware('auth:api');
+Route::delete('/amvs/{id}', 'ApiAMVController@destroy')->middleware('auth:api');
+
+
+Route::get('/genres', function() {
+    return response()->json(App\Genre::all());
+});
