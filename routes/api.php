@@ -37,3 +37,7 @@ Route::delete('/amvs/{id}', 'ApiAMVController@destroy')->middleware('auth:api');
 Route::get('/genres', function() {
     return response()->json(App\Genre::all());
 });
+
+Route::get('/contests', function() {
+    return response()->json(App\Contest::all());
+});

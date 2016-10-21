@@ -438,3 +438,44 @@ nav ul a span.badge {
 .no-padding {
   padding: 0 !important;
 }
+
+.breadcrumb {
+  font-weight: 600;
+  font-size: 1.6rem;
+  color: rgba(51, 53, 69, 0.5);
+
+  i,
+  [class^="mdi-"], [class*="mdi-"],
+  i.material-icons {
+    display: inline-block;
+    float: left;
+    font-size: 24px;
+  }
+
+  &:before {
+    content: '\E5CC';
+    color: rgba(51, 53, 69, 0.5);
+    vertical-align: bottom;
+    display: inline-block;
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 1.4rem;
+    margin: 0 10px 0 8px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  &:first-child {
+    margin-left: 50px;
+    &:before {
+      display: none;
+    }
+  }
+
+  &:last-child {
+    color: rgba(51, 53, 69, 0.7);
+  }
+  &:focus {
+    color: rgba(51, 53, 69, 0.5);
+  }
+}

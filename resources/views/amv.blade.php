@@ -30,7 +30,7 @@
                 <div class='embed-container'><iframe src='http://player.vimeo.com/video/{{ $amv->video }}' frameborder='0' webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe></div>
             </div>
         </header>
-        <div class="container">
+        <div class="container content">
             <div class="row">
                 <div class="col-md-6">
                     <h2>Anime</h2>

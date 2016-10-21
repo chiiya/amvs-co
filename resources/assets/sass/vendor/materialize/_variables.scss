@@ -66,3 +66,75 @@ $card-link-color-light: lighten($card-link-color, 20%) !default;
 // Preloader
 $spinner-default-color: $color-form !default;
 
+// Forms
+$select-border: 1px solid #f2f2f2 !default;
+$select-background: rgba(255, 255, 255, 0.90) !default;
+$select-focus: 1px solid lighten($color-secondary, 47%) !default;
+$select-padding: 5px !default;
+$select-radius: 2px !default;
+$select-disabled-color: rgba(0,0,0,.3) !default;
+
+// Buttons
+// Shared styles
+$button-border: none !default;
+$button-background-focus: lighten($color-secondary, 4%) !default;
+$button-font-size: 1.3rem !default;
+$button-height: 36px !default;
+$button-padding: 0 2rem !default;
+$button-radius: 2px !default;
+
+// Disabled styles
+$button-disabled-background: #DFDFDF !default;
+$button-disabled-color: #9F9F9F !default;
+
+// Raised buttons
+$button-raised-background: $color-secondary !default;
+$button-raised-background-hover: lighten($button-raised-background, 5%) !default;
+$button-raised-color: #fff !default;
+
+// Large buttons
+$button-large-icon-font-size: 1.6rem !default;
+$button-large-height: $button-height * 1.5 !default;
+
+// Flat buttons
+$button-flat-color: #343434 !default;
+$button-flat-disabled-color: lighten(#999, 10%) !default;
+
+// Floating buttons
+$button-floating-background: $color-secondary !default;
+$button-floating-background-hover: $button-floating-background !default;
+$button-floating-color: #fff !default;
+$button-floating-size: 37px !default;
+$button-floating-large-size: $button-floating-size * 1.5 !default;
+$button-floating-radius: 50% !default;
+
+// Form Inputs
+$input-height: 3rem !default;
+$input-border-color: $color-text-light !default;
+$input-border: 1px solid $input-border-color !default;
+$input-background: #fff !default;
+$input-error-color: red !default;
+$input-success-color: green !default;
+$input-focus-color: $color-secondary !default;
+$input-font-size: 1.4rem !default;
+$input-margin: 0 0 20px 0 !default;
+$input-padding: 0 !default;
+$input-transition: all .3s !default;
+$label-font-size: 1.4rem !default;
+$input-disabled-color: rgba(0,0,0, .26) !default;
+$input-disabled-solid-color: #BDBDBD !default;
+$input-disabled-border: 1px dotted $input-disabled-color !default;
+$input-invalid-border: 1px solid $input-error-color !default;
+$placeholder-text-color: lighten($input-border-color, 20%) !default;
+
+
+$dropdown-bg-color: #fff !default;
+$dropdown-hover-bg-color: #eee !default;
+$dropdown-color: $color-secondary !default;
+$dropdown-item-height: 50px !default;
+
+$radio-fill-color: $color-secondary !default;
+$radio-empty-color: #5a5a5a !default;
+$radio-border: 2px solid $radio-fill-color !default;
+
+

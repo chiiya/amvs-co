@@ -1,6 +1,7 @@
 <template>
-    <section>
+    <section class="dashboard-container">
         <h3 class="is-right">AMV Overview</h3>
+        <a class="button-color z-depth-1" @click="display('create')">New AMV</a>
         <div v-show="loading" class="preloader-wrapper active is-right">
             <div class="spinner-layer spinner-blue-only">
                 <div class="circle-clipper left">
@@ -14,7 +15,7 @@
                 </div>
             </div>
         </div>
-        <amv v-for="amv in amvs" :amv="amv" :user="user"></amv>
+        <amv v-for="amv in amvs" :amv="amv" :user="user" :display="display"></amv>
     </section>
 </template>
 
@@ -30,13 +31,13 @@
             }
         },
 
-        props: ['user'],
+        props: ['user', 'display'],
 
         components: {
             amv: DashAmvCard
         },
 
-        mounted: function () {
+        created: function () {
             this.$nextTick(function () {
                 this.loadData();
             })

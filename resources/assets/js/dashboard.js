@@ -31,7 +31,6 @@ const vm = new Vue({
         },
         loadData() {
             this.$http.get('/api/users/' + document.querySelector("meta[name='user']").getAttribute('id')).then((response) => {
-                console.log('user: ' + response.body);
                 this.user = response.body;
             }, (response) => {
                 console.log("Couldn't load user info.");

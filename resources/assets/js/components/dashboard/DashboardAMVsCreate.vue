@@ -1,77 +1,89 @@
 <template>
-    <section>
-        <h3 class="is-right">Create new AMV</h3>
+    <section class="is-right">
+        <h3>Create a new AMV</h3>
         <div class="row">
             <form class="col-xs-12">
                 <div class="row">
-                    <div class="input-field col-xs-12 col-sm-6">
-                        <input id="title" type="text" class="validate">
+                    <div class="col-xs-12 col-sm-6">
                         <label for="title">Title</label>
+                        <input id="title" placeholder="AMV Title" type="text" required>
                     </div>
-                    <div class="input-field col-xs-12 col-sm-6">
-                        <input id="music" type="text" class="validate">
+                    <div class="col-xs-12 col-sm-6">
                         <label for="music">Music</label>
+                        <input id="music" placeholder="Music used in the AMV" type="text" required>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="input-field col-xs-12">
-                        <input id="animes" type="text" class="validate">
+                    <div class="col-xs-12">
                         <label for="animes">Animes</label>
+                        <input id="animes" placeholder="Animes used" type="text" required>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="input-field col-xs-12">
-                        <input id="description" type="text" class="validate materialize-textarea">
+                    <div class="col-xs-12">
                         <label for="description">Description</label>
+                        <textarea id="description" placeholder="Description" @input="resizeTextarea()"></textarea>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="input-field col-xs-12 col-sm-6">
-                        <input id="video" placeholder="Youtube / Vimeo Link" type="text" class="validate">
+                    <div class="col-xs-12 col-sm-6">
                         <label for="video">Video Link</label>
+                        <input id="video" placeholder="Youtube / Vimeo Link" type="text">
                     </div>
-                    <div class="input-field col-xs-12 col-sm-6">
-                        <input id="download" placeholder="Google Drive Download Link" type="text" class="validate">
+                    <div class="col-xs-12 col-sm-6">
                         <label for="download">Download Link</label>
+                        <input id="download" placeholder="Google Drive Download Link" type="text">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-12 col-sm-6">
-                        <select multiple>
-                            <option value="" disabled selected>Choose a genre</option>
-                            <option v-for="genre in genres" v-bind:value="genre.value">
-                                {{ genre.name }}
-                            </option>
-                        </select>
-                        <label>Genre</label>
+                        <label>Genres</label>
+                        <multiselect 
+                            :value="genres" 
+                            :options="genreList"
+                            :multiple="true" 
+                            @input="updateSelected"
+                            :close-on-select="false" 
+                            :clear-on-select="false" 
+                            placeholder="Choose genres" 
+                            label="name" 
+                            track-by="name">
+                        </multiselect>
                     </div>
                     <div class="col-xs-12 col-sm-6">
-                        <p>Publication status. Unpublished entries aren't listed, but can be sent in to contests</p>
-                        <p>
+                            <label>Publishment Status</label>
+                            <p class="publishment">Unpublished entries aren't listed, but can be sent in to contests</p>
                             <input type="checkbox" class="filled-in" id="published" />
                             <label for="published">Published</label>
-                        </p>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="file-field input-field col-xs-12 col-sm-6">
-                        <div class="btn">
-                            <span>File</span>
-                            <input type="file" id="poster">
-                        </div>
-                        <div class="file-path-wrapper">
-                            <input class="file-path validate" placeholder="Poster (Recommended: 488x642px)" type="text">
-                        </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <label>Poster</label>
+                        <p>Recommended: 488x642px</p>
+                        <label for="poster" class="button-input z-depth-1">
+                            <i class="material-icons">cloud_upload</i>
+                            File
+                        </label>
+                        <input type="file" id="poster" @change="showFile('poster')">
+                        <p v-if="poster">Selected: {{ poster }}</p>
                     </div>
-                    <div class="file-field input-field col-xs-12 col-sm-6">
-                        <div class="btn">
-                            <span>File</span>
-                            <input type="file" id="bg">
-                        </div>
-                        <div class="file-path-wrapper">
-                            <input class="file-path validate" placeholder="Background Image (Recommended: 1920x900px)" type="text">
-                        </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <label>Background</label>
+                        <p>Recommended: 1920x900px</p>
+                        <label for="bg" class="button-input z-depth-1">
+                            <i class="material-icons">cloud_upload</i>
+                            File
+                        </label>
+                        <input type="file" id="bg" @change="showFile('bg')">
+                        <p v-if="bg">Selected: {{ bg }}</p>
                     </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <input id="submit" type="submit" value="Create" class="button-color z-depth-1">
+                        <input id="cancel" type="submit" value="Cancel" 
+                            @click="display('index')" class="button-light z-depth-1">
                 </div>
             </form>
         </div>
@@ -79,31 +91,51 @@
 </template>
 
 <script>
-    import DashAmvCard from './DashAmvCard.vue';
+    import Multiselect from 'vue-multiselect/lib/Multiselect.vue';
 
     export default {
         data() {
             return {
-                amv: {}
+                genres: null,
+                poster: '',
+                bg: '',
+                genreList: []
             }
         },
 
-        props: ['user'],
+        props: ['user', 'display'],
+
+        components: {
+            Multiselect
+        },
 
         mounted: function () {
-                this.loadGenres();
-            });
+            this.loadGenres();
         },
 
         methods: {
             loadGenres() {
-                this.$http.get('/api/amvs?user='+this.user.id).then((response) => {
-                    this.loading = false;
-                    this.amvs = response.body;
-                    this.formatDate();
+                this.$http.get('/api/genres').then((response) => {
+                    this.genreList = response.body;
                 }, (response) => {
-                    console.log("Couldn't load AMVs");
+                    console.log("Couldn't load genres.");
                 });
+            },
+
+            // Automatically expand (or reduce) textarea on user input.
+            resizeTextarea() {
+                const textarea = event.currentTarget;
+                textarea.style.height = "";
+                textarea.style.height = textarea.scrollHeight + "px";
+            },
+
+            // Get the submitted filepath, and strip out path. 'C:\Pictures\foo.png' -> 'foo.png'
+            showFile(type) {
+                this[type] = event.currentTarget.value.replace(/^.*?([^\\\/]*)$/, '$1');
+            },
+
+            updateSelected(value) {
+                this.genres = value;
             }
         }
         

@@ -16,7 +16,9 @@
     "laravel-elixir-webpack-official": "^1.0.2",
     "lodash": "^4.16.2",
     "vue": "^2.0.3",
-    "vue-resource": "^1.0.3"
+    "vue-materialize": "^1.0.0",
+    "vue-resource": "^1.0.3",
+    "vue-simple-select": "^1.0.1"
   },
   "dependencies": {
     "moment": "^2.15.1",

@@ -1,4 +1,7 @@
 body.dashboard {
+    min-height: auto;
+    background-color: $light-3;
+
     .nav--side {
         &.nav--fixed {
             overflow: hidden;
@@ -46,14 +49,26 @@ body.dashboard {
 }
 
 .dashboard__content {
+    a.button-color {
+        float: right;
+        color: #f3f3f3;
+        font-weight: normal;
+        margin-right: 15px;
+        margin-top: 0.9em;
+        &:hover{
+            color: #f3f3f3;
+        }
+    }
     padding-left: 240px;
     margin-top: 50px;
     .col-xs-12 { padding-left: 0; }
 
     h3 {
         font-family: $font-title;
-        font-weight: 300;
+        font-weight: 900;
         color: $color-sidenav-bg;
+        font-size: 1.6rem;
+        display: inline-block;
     }
 
     header + p {
@@ -62,7 +77,26 @@ body.dashboard {
         color: $color-text-light;
         margin-top: 1em;
     }
+
+    section {
+        .row {
+            margin-right: 0;
+            margin-left: 0;
+            margin-bottom: 20px;
+        }
+        margin-bottom: 5%;
+    }
 }
+
+.multiselect__tags {
+    background: transparent !important;
+    padding-top: 0 !important;
+    border: 0.1rem solid #d1d1d1 !important;
+}
+.multiselect__input {
+    border: none !important;
+    margin-bottom: 0 !important;
+}   
 
 .dashboard__user {
     margin-top: 50px;
@@ -117,10 +151,49 @@ body.dashboard {
     max-width: 140px;
 }
 
+.card-content {
+    h2 {
+        display: inline-block;
+    }
+    h2 + p {
+        float:right;
+        margin-top: -1px !important;
+    }
+}
 
 
-.preloader-wrapper { text-align: center; margin: 0 auto; }
+
+.preloader-wrapper { display: block; ext-align: center; margin: 0 auto; }
 
 .is-right {
     margin-left: 50px;
+}
+
+.publishment {
+    margin-bottom: 3px;
+    margin-top: -5px;
+}
+
+.dashboard__card {
+    h2 a {
+        font-family: $font-title;
+        font-weight: 600;
+        font-size: 1.6rem;
+    }
+    p {
+        font-size: 1.6rem;
+        color: $color-text-light;
+    }
+    .card-action a {
+        font-size: 1.4rem;
+    }
+    i {
+        font-size: 1.4rem;
+        vertical-align: middle;
+        margin-bottom: 3px;
+    }
+}
+
+.dashboard-container {
+    max-width: 1100px;
 }
