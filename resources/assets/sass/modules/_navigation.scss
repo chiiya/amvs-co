@@ -6,10 +6,8 @@
 
     ul {
         li {
-        
         color: $color-bg;
         display: inline-block;
-        font-family: $font-title;
         font-weight: 300;
         font-size: 1.6rem;
         padding: 0 20px;
@@ -20,7 +18,7 @@
             color: $color-bg;
             &:hover, &:focus, &:active {
                 text-decoration: none;
-                color: lighten($color-primary, 10%);
+                color: lighten($color-accent, 10%);
             }
         }
 

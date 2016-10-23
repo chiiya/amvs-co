@@ -1,5 +1,6 @@
 body.profile {
     height: 100%;
+    
     header {
         height: 90%;
         min-height: 600px;
@@ -10,6 +11,9 @@ body.profile {
         }
         ul {
             margin-bottom: 5rem;
+        }
+        p {
+            font-family: $font-secondary;
         }
     }
     .row {

@@ -1,98 +1,154 @@
 .button {
-    background-color: $color-primary;
-    border-radius: 2rem;
-    padding: 13px 30px;
-    color: white;
-    text-transform: uppercase;
-    letter-spacing: 0.1rem;
-    font-family: $font-secondary;
     font-size: 1.8rem;
     text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-weight: normal;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
 
-    &:hover, :focus, :active {
-        background-color: darken($color-primary, 10%);
-        text-decoration: none;
-        color: white;
-    }
-
-    &-small {
-        color: $color-text-dark;
-        padding: 10px 20px;
-        font-size: 1.6rem;
-        border-radius: 1rem;
-        border: 1px solid $color-text-dark;
-        background-color: transparent;
-
-        &:hover, :focus, :active {
-            background-color: $color-text-dark;
-            color: white;
-        }
-    }
-    &-input {
-        letter-spacing: .2rem;
-        cursor: pointer;
-        font-size: 1.4rem;
-        text-transform: uppercase;
-        color: #424242;
-        background-color: #e8eaf6;
-        font-weight: normal;
-        padding: 4px 15px;
+    &:focus {
         border: none;
-        max-width: 100px;
+        outline: 0 !important;
+    }
 
-        &:hover {
-            box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15);
-        }
+    &--rounded {
+        text-transform: uppercase;
+        letter-spacing: 0.1rem;
+        font-family: $font-secondary;
+        border-radius: 2rem;
+        padding: 13px 30px;
+    }
+
+    &--square {
+        border-radius: 3px;
+        font-size: 1.4rem;
+        font-family: $font-primary;
+        padding: 5px 15px;
+
         &:focus {
 	        outline: 1px dotted #000;
 	        outline: -webkit-focus-ring-color auto 5px;
         }
+    }
+
+    &--primary {
+        background-color: $color-primary;
+        color: #fff;
+
+        &:hover, &:active, &:focus {
+            background-color: $color-secondary;
+            color: #fff;
+        }
+    }
+
+    &--secondary {
+        background-color: $color-accent;
+        color: #fff;
+
+        &:hover, &:active, &:focus {
+            background-color: darken($color-accent, 10%);
+            color: #fff;
+        }
+    }
+
+    &--transparent {
+        text-transform: none;
+        letter-spacing: normal;
+        padding: 5px 10px;
+        background-color: transparent;
+
+        &.button--danger {  
+            color: $color-button-error;
+            border: 1px solid $color-button-error;
+        
+            &:hover, &:active, &:focus {
+                background-color: $color-button-error;
+                color: #fff;
+            }
+        }
+
+        &.button--primary {
+            color: $color-primary;
+            border: 1px solid $color-button-input-border;
+        
+            &:hover, &:active, &:focus {
+                color: $color-primary;
+                background-color: transparent;
+                border-color: $color-primary;
+            }
+        }
+
+        .material-icons {
+                font-size: 1.4rem;
+                vertical-align: middle;
+        }
+
+        color: $color-primary;
+        border: 1px solid $color-primary;
+
+        &:hover, &:active, &:focus {
+            color: #fff;
+        }
+    }
+
+    &-input {
+        letter-spacing: .2rem;
+        font-size: 1.3rem;
+        color: $color-primary;
+        background-color: $color-light-1;
+        padding: 5px 15px;
 
         i {
             font-size: 1.4rem;
             vertical-align: middle;
         }
-    }
 
-    &-color {
-        letter-spacing: .2rem;
-        cursor: pointer;
-        font-size: 1.4rem;
-        text-transform: uppercase;
-        color: #f3f3f3;
-        background-color: $color-sidenav-bg;
-        font-weight: 600;
-        padding: 4px 30px;
-        border: none;
-        &:hover {
-            background-color: $color-sidenav-user;
-            box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15)
-        }
-        &:focus {
-            border: none;
-            outline: 0;
+        &:active, &:focus {
+            background-color: $color-light-1;
         }
     }
 
-    &-light {
-        letter-spacing: .2rem;
-        cursor: pointer;
-        font-size: 1.4rem;
-        text-transform: uppercase;
-        color: $color-sidenav-text;
-        background-color: #e8eaf6;
-        font-weight: 600;
-        padding: 4px 30px;
-        border: none;
-        margin-left: 20px;
+    &--loading {
+        pointer-events: none;
 
-        &:hover {
-            box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15);
+        &:before {
+            -webkit-animation: spinAround 500ms infinite linear;
+            animation: spinAround 500ms infinite linear;
+            border: 2px solid #fff;
+            border-radius: 290486px;
+            border-right-color: transparent;
+            border-top-color: transparent;
+            content: "";
+            display: inline-block;
+            height: 13px;
+            width: 13px;
+            margin-right: 10px;
+            vertical-align: middle;
+            margin-bottom: 1px;
         }
-        &:focus {
-            border: none;
-            outline: 0;
+
+        &.button--primary {
+            color: #fff;
+            background-color: $color-secondary;
         }
+
+        &.button--danger {
+            color: #fff;
+            background-color: $color-button-error;
+        }
+    }
+
+    &--success {
+        background-color: $color-button-success;
+        color: #fff !important;
+    }
+
+    &--error {
+        background-color: $color-button-error;
+        color: #fff !important;
     }
 }
 

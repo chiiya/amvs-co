@@ -1,16 +1,23 @@
 // TYPOGRAPHY
 $font-title: 'Lato', sans-serif;
-$font-primary: 'Vollkorn', serif;
+$font-primary: $font-title;
+$font-text: 'Vollkorn', serif;
 $font-secondary: 'Unica One', cursive;
 
 // COLORS
-$color-secondary: teal;
+$color-primary: #333545;
+$color-secondary: #565c89;
+$color-accent: #92b4a7;
+$color-light-1: #e8eaf6;
+$color-button-success: #5cb85c;
+$color-button-error: #ff3860;
+$color-button-input: #363636;
+$color-button-input-border: #dbdbdb;
 $secondary-color: $color-secondary;
 $color-nav-bg: #333545;
 $color-sidenav-bg: #333545;
 $color-sidenav-user: #565c89;
 $color-sidenav-text: #98999e;
-$color-primary: #92b4a7;
 $color-bg: #f3f3f3;
 $color-text-dark: #171717;
 $color-text-light: #888888;

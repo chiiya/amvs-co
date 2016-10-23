@@ -48,17 +48,17 @@ body.dashboard {
     }
 }
 
-.dashboard__content {
-    a.button-color {
+.dashboard__index {
+    .button {
         float: right;
-        color: #f3f3f3;
-        font-weight: normal;
         margin-right: 15px;
         margin-top: 0.9em;
-        &:hover{
-            color: #f3f3f3;
-        }
+
     }
+}
+
+.dashboard__content {
+
     padding-left: 240px;
     margin-top: 50px;
     .col-xs-12 { padding-left: 0; }
@@ -161,9 +161,18 @@ body.dashboard {
     }
 }
 
+.dashboard__form {
+    input[type="submit"]:nth-child(2), #cancel {
+        margin-left: 20px;
+    }
+    label.delete {
+        margin-bottom: 15px;
+    }
+}
 
 
-.preloader-wrapper { display: block; ext-align: center; margin: 0 auto; }
+
+.preloader-wrapper { display: block; text-align: center; margin: 0 auto; }
 
 .is-right {
     margin-left: 50px;
@@ -196,4 +205,13 @@ body.dashboard {
 
 .dashboard-container {
     max-width: 1100px;
+}
+
+/**
+* Animations
+**/
+
+.contest-list-leave-active {
+    transition: all 0.5s;
+    opacity: 0;
 }

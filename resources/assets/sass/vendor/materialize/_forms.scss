@@ -8,7 +8,7 @@ button:focus {
   background-color: $button-background-focus;
 }
 
-label {
+label, input[disabled] {
   font-size: $label-font-size;
   color: $input-border-color;
 }
