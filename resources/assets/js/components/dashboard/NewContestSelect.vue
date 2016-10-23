@@ -1,6 +1,6 @@
 <template>
     <div class="row">
-        <div class="col-xs-12 col-sm-6">
+        <div class="col-xs-12 col-sm-5">
             <label>New Contest</label>
             <multiselect 
                 :value="selected" 
@@ -8,15 +8,14 @@
                 :searchable="true"
                 :custom-label="nameWithYear"
                 :reset-after="true" 
-                @input="updateSelected"
+                @input="add"
                 :close-on-select="true" 
-                :clear-on-select="false" 
                 placeholder="Select one" 
                 label="name" 
                 track-by="name">
             </multiselect>
         </div>
-        <div v-if="selected" class="col-xs-12 col-sm-6">
+        <div v-if="selected" class="col-xs-12 col-sm-5">
             <label for="award">Award / Placement</label>
             <input id="award" v-model="selected.award" 
                 placeholder="Contest Award or Placement" type="text">
@@ -30,21 +29,30 @@
     export default {
         data () {
             return {
+                /**
+                * Current selected option from multiselect.
+                * @type {Object} gets assigned the entire award object
+                */
                 selected: null
             }
         },
 
         props: {
-            contestList: Array,
+            /**
+            * List with all contests, passed from parent.
+            * @type {Array}
+            */
+            contestList: {
+                type: Array
+            },
+            /**
+            * Parent method to add the newly selected option to amv.contests
+            * @type {Function}
+            */
             add: {
                 type: Function,
                 default: null
-            },
-            remove: {
-                type: Function,
-                default: null
             }
-            
         },
 
         components: {
@@ -52,16 +60,10 @@
         },
 
         methods: {
-            updateSelected (value) {
-                // If selected is null and value isn't, we're creating a new contest entry
-                if (!this.selected && value) {
-                    this.add(value);
-                } 
-                // If new value is null, we're removing an existing contest entry
-                else if (this.selected && !value) {
-                    this.remove(this.selected);
-                }
-            },
+            /**
+            * Concatenates contest name and year so that both get displayed in the multiselect dropdown.
+            * @returns {String}
+            */
             nameWithYear ({ name, year }) {
                 return `${name} ${year}`
             }

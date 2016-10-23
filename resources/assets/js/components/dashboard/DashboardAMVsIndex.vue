@@ -1,7 +1,7 @@
 <template>
-    <section class="dashboard-container">
+    <section class="dashboard__index dashboard-container">
         <h3 class="is-right">AMV Overview</h3>
-        <a class="button-color z-depth-1" @click="display('create')">New AMV</a>
+        <a class="button button--square button--primary z-depth-1" @click="display('create')">New AMV</a>
         <div v-show="loading" class="preloader-wrapper active is-right">
             <div class="spinner-layer spinner-blue-only">
                 <div class="circle-clipper left">

@@ -1,5 +1,5 @@
 <template>
-    <section class="is-right">
+    <section class="dashboard__form is-right">
         <h3>Create a new AMV</h3>
         <div class="row">
             <form class="col-xs-12">
@@ -61,29 +61,28 @@
                     <div class="col-xs-12 col-sm-6">
                         <label>Poster</label>
                         <p>Recommended: 488x642px</p>
-                        <label for="poster" class="button-input z-depth-1">
+                        <label for="poster" class="button button--square button--input z-depth-1">
                             <i class="material-icons">cloud_upload</i>
-                            File
+                            File {{ poster }}
                         </label>
-                        <input type="file" id="poster" @change="showFile('poster')">
-                        <p v-if="poster">Selected: {{ poster }}</p>
+                        <input type="file" id="poster" @change="showFile('poster', $event)">
                     </div>
                     <div class="col-xs-12 col-sm-6">
                         <label>Background</label>
                         <p>Recommended: 1920x900px</p>
-                        <label for="bg" class="button-input z-depth-1">
+                        <label for="bg" class="button button--square button--input z-depth-1">
                             <i class="material-icons">cloud_upload</i>
-                            File
+                            File {{ bg }}
                         </label>
-                        <input type="file" id="bg" @change="showFile('bg')">
-                        <p v-if="bg">Selected: {{ bg }}</p>
+                        <input type="file" id="bg" @change="showFile('bg', $event)">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-12">
-                        <input id="submit" type="submit" value="Create" class="button-color z-depth-1">
+                        <input id="submit" type="submit" value="Create" 
+                            class="button button--square button--primary large z-depth-1">
                         <input id="cancel" type="submit" value="Cancel" 
-                            @click="display('index')" class="button-light z-depth-1">
+                            @click="display('index')" class="button button--square button--input large z-depth-1">
                 </div>
             </form>
         </div>
@@ -130,8 +129,8 @@
             },
 
             // Get the submitted filepath, and strip out path. 'C:\Pictures\foo.png' -> 'foo.png'
-            showFile(type) {
-                this[type] = event.currentTarget.value.replace(/^.*?([^\\\/]*)$/, '$1');
+            showFile(type, event) {
+                this[type] = ' | ' + event.currentTarget.value.replace(/^.*?([^\\\/]*)$/, '$1');
             },
 
             updateSelected(value) {

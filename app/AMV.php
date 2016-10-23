@@ -40,7 +40,7 @@ class AMV extends Model
      */
     public function contests() {
         return $this->belongsToMany('App\Contest', 'amv_contest', 'amv_id', 'contest_id')
-            ->withPivot('award as award');
+            ->withPivot('award as award', 'id as award_id');
     }
 
     /**

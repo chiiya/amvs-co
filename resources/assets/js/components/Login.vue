@@ -2,7 +2,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <form>
+                    <form method="post">
                         <p class="error" v-if="error">{{ errorMessage }}</p>
                         <input type="email" placeholder="Email" v-model="email" v-on:keyup.enter="submit" required autofocus>
                         <input type="password" placeholder="Password" v-model="password" v-on:keyup.enter="submit" required>
@@ -31,7 +31,7 @@
     methods: {
         submit(e) {
             e.preventDefault();
-            let data = {};
+            const data = {};
 
             data.email = this.email;
             data.password = this.password;

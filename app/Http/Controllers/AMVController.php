@@ -26,4 +26,37 @@ class AMVController extends Controller
             return view('404');
         }
     }
+
+    public function updateAwards(Request $request, $amvId) 
+    {
+        $contests = $request->input('contests');
+        $amv = AMV::find($amvId);
+        if ($amv->user_id !== $request->user()->id) {
+            return response()
+                ->json(['error' => "Unauthorized. Not the owner of this AMV."], 401);
+        }
+
+        foreach ($contests as $contest) {
+            if ($contest['award_id']) {
+                $amv->contests()->newPivotStatement()
+                    ->where('id', $contest['award_id'])->update(['award' => $contest['award']]);
+            } else {
+                $amv->contests()->attach($contest['id'], ['award' => $contest['award']]);
+            }
+        }
+
+        return response()->json(["message" => "AMV updated."], 200);
+    }
+
+    public function deleteAward(Request $request, $amvId, $awardId) {
+        $amv = AMV::find($amvId);
+        if ($amv->user_id !== $request->user()->id) {
+            return response()
+                ->json(['error' => "Unauthorized. Not the owner of this AMV."], 401);
+        }
+
+        $amv->contests()->newPivotStatement()->where('id', $awardId)->delete();
+
+        return response()->json(["message" => "AMV updated."], 200);
+    }
 }

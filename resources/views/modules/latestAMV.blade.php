@@ -13,7 +13,7 @@
                 <li>{{ $latest->genre }}</li>
                 <li>{{ $latest->created_at->format('M Y') }}</li>
             </ul>
-            <a class="button icon play" href="/user/{{ $user->name }}/{{ $latest->url }}"><span>Watch Now</span></a>
+            <a class="button button--rounded button--secondary icon play" href="/user/{{ $user->name }}/{{ $latest->url }}"><span>Watch Now</span></a>
 @else
     <header>
         <div class="clear"></div>

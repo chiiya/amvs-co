@@ -35,6 +35,9 @@ Route::get('/login', function() {
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/dashboard', 'UserController@showDashboard')->name('dashboard');
     Route::get('/profile', 'UserController@showProfile')->name('profile');
+    
+    Route::put('/amv/{amvId}/awards', 'AMVController@updateAwards');
+    Route::delete('/amv/{amvId}/awards/{awardId}', 'AMVController@deleteAward');
 });
 
 Route::get('/user/{name}', 'UserController@show');

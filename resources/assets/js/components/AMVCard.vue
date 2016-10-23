@@ -19,7 +19,7 @@
                     <ul>
                         <li v-for="contest in amv.contests">{{ contest.name + ' ' + contest.year + ' ' + contest.award }}</li>
                     </ul>
-                    <a class="button button-small" v-bind:href="'/user/' + user.name + '/' + amv.url"><i class="fa fa-fw fa-play-circle-o"></i> Watch Now</span></a>
+                    <a class="button button--rounded button--transparent" v-bind:href="'/user/' + user.name + '/' + amv.url"><i class="fa fa-fw fa-play-circle-o"></i> Watch Now</span></a>
                 </div>
             </div>
             <a class="mc-btn-action" v-on:click="animateCard">
