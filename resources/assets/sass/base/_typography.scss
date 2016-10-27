@@ -48,6 +48,9 @@ header {
 
 p {
     font-size: 1.6rem;
+    &.error {
+        color: $color-error;
+    }
 }
 
 h2 {

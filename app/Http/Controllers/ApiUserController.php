@@ -25,7 +25,7 @@ class ApiUserController extends Controller
         }
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
         try {
             $user = User::findOrFail($id);

@@ -146,10 +146,7 @@ body.dashboard {
     }
 }
 
-.card-image img {
-    max-height: 170px;
-    max-width: 140px;
-}
+
 
 .card-content {
     h2 {
@@ -170,6 +167,21 @@ body.dashboard {
     }
 }
 
+.form--profile {
+    img {
+        max-height: 100px;
+        width: auto;
+    }
+    .img--description {
+        p {
+            font-size: 1.3rem;
+            color: $color-text-light;
+        }
+        display: inline-block;
+        margin-left: 20px;
+        vertical-align: top;
+    }
+}
 
 
 .preloader-wrapper { display: block; text-align: center; margin: 0 auto; }
@@ -200,6 +212,11 @@ body.dashboard {
         font-size: 1.4rem;
         vertical-align: middle;
         margin-bottom: 3px;
+    }
+    .card-image img {
+        height: 170px !important;
+        width: 129px !important;
+        object-fit: cover;
     }
 }
 

@@ -11,7 +11,8 @@
             leave-activeclass="animated fadeOut" 
             mode="out-in"
         >
-            <component :is="currentView" :user="user" :amv="amv" :display.sync="display">
+            <component :is="currentView" :user="user" :amvs="amvs"
+                :loading="loading" :amv="amv" :add-amv="addAmv" :display.sync="display">
             </component>
         </transition>
         </keep-alive>
@@ -31,7 +32,7 @@
             }
         },
 
-        props: ['user'],
+        props: ['user', 'amvs', 'loading', 'addAmv'],
 
         components: {
             index: DashboardAMVsIndex,

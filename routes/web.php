@@ -38,11 +38,20 @@ Route::group(['middleware' => 'auth'], function () {
     
     Route::put('/amv/{amvId}/awards', 'AMVController@updateAwards');
     Route::delete('/amv/{amvId}/awards/{awardId}', 'AMVController@deleteAward');
+    Route::put('/users/{id}', 'UserController@update');
+    Route::post('/amvs', 'AMVController@store');
 });
 
-Route::get('/user/{name}', 'UserController@show');
+Route::get('/users/{id}', 'UserController@get');
 
+Route::get('/user/{name}', 'UserController@show');
 Route::get('user/{name}/{amv}', 'AMVController@show');
+
+
+
+
+
+
 
  // Authentication Routes...
 Route::post('login', 'Auth\LoginController@login');

@@ -23,13 +23,21 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <button id="submit" v-bind:disabled="buttonDisabled"
-                            class="button button--square"
+                            class="button button--square z-depth-1"
                             v-bind:class="buttonClasses"
                             @click="submit">
                             {{ buttonStatus }}</button>
                         <button id="cancel" @click="display('index')" 
                             class="button button--square button--transparent button--primary">
-                            Cancel</button>
+                            {{ cancelButtonStatus }} </button>
+                    </div>
+                </div>
+                <div v-if="submitErrors.length > 0" class="row">
+                    <div class="col-xs-12">
+                        <p v-for="error in submitErrors" class="error">
+                            {{ error }}
+                        </p>
+                        <div> {{ htmlError }}</div>
                     </div>
                 </div>
             </div>
@@ -49,7 +57,9 @@
                 contestList: [],
                 updatedAMV: {},
                 buttonDisabled: false,
-                buttonStatus: 'Save'
+                buttonStatus: 'Save',
+                cancelButtonStatus: 'Cancel',
+                submitErrors: []
             }
         },
 
@@ -123,17 +133,27 @@
                     }
                 }).then((response) => {
                     this.buttonStatus = 'Saved';
+                    this.cancelButtonStatus = 'Back';
                 }, (response) => {
                     this.buttonStatus = 'Failed';
+                    if (typeof response.body === 'object') {
+                        for (let key in response.body) {
+                            this.submitErrors.push(response.body[key][0]);
+                        }
+                    } else {
+                        this.submitErrors.push("Server Error. Please try again later.");
+                        this.htmlError = response.body;
+                    }
                 });
             },
             /**
             * Gets called from child components. If a user input change has been made, the Save button
-            * will be reset, so that the user can save additional changes.
+            * will be reset, so that the user can save additional changes. 
             */
             notifyChange() {
                 this.buttonDisabled = false;
                 this.buttonStatus = 'Save';
+                this.cancelButtonStatus = 'Cancel';
             }
         },
     }

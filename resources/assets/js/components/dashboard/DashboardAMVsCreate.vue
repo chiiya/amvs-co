@@ -6,40 +6,45 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-6">
                         <label for="title">Title</label>
-                        <input id="title" placeholder="AMV Title" type="text" required>
+                        <input id="title" v-model="amvObject.title" placeholder="AMV Title" type="text" required>
+                        <p v-if="showError('title')" class="error"> {{ errors.title }}</p>
                     </div>
                     <div class="col-xs-12 col-sm-6">
                         <label for="music">Music</label>
-                        <input id="music" placeholder="Music used in the AMV" type="text" required>
+                        <input id="music" v-model="amvObject.music" placeholder="Music used in the AMV" type="text" required>
+                        <p v-if="showError('music')" class="error"> {{ errors.music }}</p>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-12">
                         <label for="animes">Animes</label>
-                        <input id="animes" placeholder="Animes used" type="text" required>
+                        <input id="animes" v-model="amvObject.animes" placeholder="Animes used" type="text" required>
+                        <p v-if="showError('animes')" class="error"> {{ errors.animes }}</p>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-12">
                         <label for="description">Description</label>
-                        <textarea id="description" placeholder="Description" @input="resizeTextarea()"></textarea>
+                        <textarea id="description" v-model="amvObject.description" placeholder="Description" @input="resizeTextarea()"></textarea>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-12 col-sm-6">
                         <label for="video">Video Link</label>
-                        <input id="video" placeholder="Youtube / Vimeo Link" type="text">
+                        <input id="video" v-model="amvObject.video" placeholder="Youtube / Vimeo Link" type="text">
+                        <p v-if="showError('video')" class="error"> {{ errors.video }}</p>
                     </div>
                     <div class="col-xs-12 col-sm-6">
                         <label for="download">Download Link</label>
-                        <input id="download" placeholder="Google Drive Download Link" type="text">
+                        <input id="download" v-model="amvObject.download" placeholder="Google Drive Download Link" type="text">
+                        <p v-if="showError('download')" class="error"> {{ errors.download }}</p>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-12 col-sm-6">
                         <label>Genres</label>
                         <multiselect 
-                            :value="genres" 
+                            :value="amvObject.genres" 
                             :options="genreList"
                             :multiple="true" 
                             @input="updateSelected"
@@ -53,7 +58,7 @@
                     <div class="col-xs-12 col-sm-6">
                             <label>Publishment Status</label>
                             <p class="publishment">Unpublished entries aren't listed, but can be sent in to contests</p>
-                            <input type="checkbox" class="filled-in" id="published" />
+                            <input type="checkbox" v-model="amvObject.published" class="filled-in" id="published" />
                             <label for="published">Published</label>
                     </div>
                 </div>
@@ -66,6 +71,7 @@
                             File {{ poster }}
                         </label>
                         <input type="file" id="poster" @change="showFile('poster', $event)">
+                        <p v-if="showError('poster')" class="error"> {{ errors.poster }}</p>
                     </div>
                     <div class="col-xs-12 col-sm-6">
                         <label>Background</label>
@@ -75,14 +81,27 @@
                             File {{ bg }}
                         </label>
                         <input type="file" id="bg" @change="showFile('bg', $event)">
+                        <p v-if="showError('bg')" class="error"> {{ errors.bg }}</p>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xs-12">
-                        <input id="submit" type="submit" value="Create" 
-                            class="button button--square button--primary large z-depth-1">
-                        <input id="cancel" type="submit" value="Cancel" 
-                            @click="display('index')" class="button button--square button--input large z-depth-1">
+                        <button id="submit" v-bind:disabled="saveButtonDisabled"
+                            class="button button--square z-depth-1"
+                            v-bind:class="saveButtonClasses"
+                            @click="submit">
+                            {{ saveButtonStatus }}</button>
+                        <button id="cancel" @click="display('index')" 
+                            class="button button--square button--transparent button--primary">
+                            {{ cancelButtonStatus }}</button>
+                    </div>
+                </div>
+                <div v-if="submitErrors.length > 0" class="row">
+                    <div class="col-xs-12">
+                        <p v-for="error in submitErrors" class="error">
+                            {{ error }}
+                        </p>
+                    </div>
                 </div>
             </form>
         </div>
@@ -91,18 +110,59 @@
 
 <script>
     import Multiselect from 'vue-multiselect/lib/Multiselect.vue';
+    import { matchYoutubeUrl, matchVimeoUrl, matchDriveUrl } from '../../util/functions';
 
     export default {
         data() {
             return {
-                genres: null,
+                amvObject: {
+                    title: '',
+                    music: '',
+                    animes: '',
+                    video: '',
+                    videoHost: '',
+                    videoCode: '',
+                    download: '',
+                    driveId: '',
+                    description: '',
+                    published: false,
+                    genres: []
+                },
+                errors: {
+                    title: '',
+                    music: '',
+                    animes: '',
+                    video: '',
+                    download: '',
+                    bg: '',
+                    poster: ''
+                },
+                submitErrors: [],
                 poster: '',
                 bg: '',
-                genreList: []
+                genreList: [],
+                saveButtonDisabled: false,
+                saveButtonStatus: 'Save',
+                cancelButtonStatus: 'Cancel'
             }
         },
 
-        props: ['user', 'display'],
+        props: ['user', 'display', 'amvs', 'addAmv'],
+
+        computed: {
+            /**
+            * Possible Save button classes, depending on the value of saveButtonStatus
+            * @returns {Object}
+            */
+            saveButtonClasses: function() {
+                return {
+                    'button--primary': this.saveButtonStatus === 'Save' || this.saveButtonStatus === 'Saving...',
+                    'button--loading': this.saveButtonStatus === 'Saving...',
+                    'button--success': this.saveButtonStatus === 'Saved',
+                    'button--error': this.saveButtonStatus === 'Failed'
+                }
+            }            
+        },
 
         components: {
             Multiselect
@@ -113,6 +173,9 @@
         },
 
         methods: {
+            /**
+            * Load a list of available genres to use for the multiselect
+            */
             loadGenres() {
                 this.$http.get('/api/genres').then((response) => {
                     this.genreList = response.body;
@@ -121,21 +184,189 @@
                 });
             },
 
-            // Automatically expand (or reduce) textarea on user input.
+            /**
+            * Automaticaly expand (or reduce) the description textarea on user input
+            */
             resizeTextarea() {
                 const textarea = event.currentTarget;
                 textarea.style.height = "";
                 textarea.style.height = textarea.scrollHeight + "px";
             },
 
-            // Get the submitted filepath, and strip out path. 'C:\Pictures\foo.png' -> 'foo.png'
+            /**
+            * Get the submitted filepath, and strip out the path. 'C:\Pictures\foo.png' -> 'foo.png'
+            * @params {String: poster/bg, Object}
+            */
             showFile(type, event) {
                 this[type] = ' | ' + event.currentTarget.value.replace(/^.*?([^\\\/]*)$/, '$1');
             },
 
+            /**
+            * Update the AMV genres with values from multiselect
+            * @params {Array: list of genre objects}
+            */
             updateSelected(value) {
-                this.genres = value;
+                this.amvObject.genres = value;
+            },
+
+            /**
+            * Submit the form and create new AMV entry
+            */
+            submit: function() {
+                this.saveButtonDisabled = true;
+                this.saveButtonStatus = 'Saving...';
+                const formData = new FormData();
+                const posterFiles = document.getElementById('poster').files;
+                const bgFiles = document.getElementById('bg').files;
+
+                // Validate form
+                if (!this.validateForm(posterFiles, bgFiles)) {
+                    this.saveButtonStatus = 'Failed';
+                    window.scrollTo(0, 0);
+                    return;
+                }
+
+                formData.append('title', this.amvObject.title);
+                formData.append('music', this.amvObject.music);
+                formData.append('animes', this.amvObject.animes);
+                formData.append('description', this.amvObject.description);
+                formData.append('video', this.amvObject.video);
+                formData.append('videoHost', this.amvObject.videoHost);
+                formData.append('videoCode', this.amvObject.videoCode);
+                formData.append('download', this.amvObject.download);
+                formData.append('driveId', this.amvObject.driveId);
+                formData.append('published', this.amvObject.published);
+                
+                // If genres are specified, push all genre IDs onto new array and append
+                if (this.amvObject.genres.length > 0) {
+                    let genreArray = [];
+                    for (let i=0; i<this.amvObject.genres.length; i++) {
+                        genreArray.push(this.amvObject.genres[i].id);
+                    }
+                    formData.append('genres', JSON.stringify(genreArray));
+                }
+
+                if (posterFiles && posterFiles[0]) {
+                    formData.append('poster', posterFiles[0]);
+                }
+                if (bgFiles && bgFiles[0]) {
+                    formData.append('bg', bgFiles[0]);
+                }
+                
+                this.$http.post('/amvs/', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Accept': 'application/json'
+                    }
+                }).then((response) => {
+                    this.saveButtonStatus = 'Saved';
+                    this.cancelButtonStatus = 'Back';
+                    const newAmv = response.body;
+                    newAmv.contests = [];
+                    newAmv.genres = this.amvObject.genres;
+                    this.addAmv(newAmv);
+                }, (response) => {
+                    this.saveButtonStatus = 'Failed';
+                    // If response is JSON print out the errors (e.g. validation)
+                    if (typeof response.body === 'object') {
+                        for (let key in response.body) {
+                            this.submitErrors.push(response.body[key][0]);
+                        }
+                    } else {
+                        this.submitErrors.push("Server Error. Please try again later.");
+                    }
+                });
+            },
+
+            /**
+            * Validates the input form
+            * @returns {Boolean} Form is valid or not
+            */
+            validateForm: function(posterFiles, bgFiles) {
+                let valid = true;
+
+                // Check if title is present, and then if that title has already been used in one of the user's AMVs.
+                if (!this.amvObject.title.length > 0) {
+                    this.errors.title = "Please specify a title for your AMV.";
+                    valid = false;
+                } else {
+                    for (let i=0; i<this.amvs.length; i++) {
+                        if (this.amvs[i].title.indexOf(this.amvObject.title) > -1) {
+                            this.errors.title = "You already used this title for another AMV. Your title needs to be unique among your AMVs.";
+                            valid = false;
+                        }
+                    }
+                }
+                // Check if anime list is present
+                if (!this.amvObject.animes.length > 0) {
+                    this.errors.animes = "Please list the animes used in the AMV.";
+                    valid = false;
+                }
+                // Check if music has been specified
+                if (!this.amvObject.music.length > 0) {
+                    this.errors.music = "Please specify the music used in the AMV.";
+                    valid = false;
+                }
+                // Match input video URL to either Youtube or Vimeo and extract video ID
+                if (this.amvObject.video.length > 0) {
+                    const youtube = matchYoutubeUrl(this.amvObject.video);
+                    const vimeo = matchVimeoUrl(this.amvObject.video);
+
+                    if (!youtube && !vimeo) {
+                        this.errors.video = "Your video URL is not valid. Please use a valid Youtube or Vimeo URL.";
+                        valid = false;
+                    } else if (youtube) {
+                        this.amvObject.videoHost = 'Youtube';
+                        this.amvObject.videoCode = youtube;
+                    } else if (vimeo) {
+                        this.amvObject.videoHost = 'Vimeo';
+                        this.amvObject.videoCode = vimeo;
+                    }
+                }
+                // Match input download URL to Google Drive and extract file ID
+                if (this.amvObject.download.length > 0) {
+                    const drive = matchDriveUrl(this.amvObject.download);
+                    if (!drive) {
+                        this.errors.download = "Your download URL is not valid. Please use a valid Google Drive shared file URL.";
+                        valid = false;
+                    }
+                    this.amvObject.driveId = drive;
+                }
+                // Check if poster is a valid image file and no larger than 500 KB
+                if (posterFiles && posterFiles[0]) {
+                    if (!(/\.(png|jpeg|jpg)$/i).test(posterFiles[0].name)) {
+                        this.errors.poster = "Must be a valid image file (.PNG, .JPG or .JPEG allowed).";
+                        valid = false;
+                    }
+                    if (posterFiles[0].size/1024 > 500) {
+                        this.errors.poster("Image must be smaller than 500KB.");
+                        valid = false;
+                    }
+                }
+                // Check if background is a valid image file and no larger than 500 KB
+                if (bgFiles && bgFiles[0]) {
+                    if (!(/\.(png|jpeg|jpg)$/i).test(bgFiles[0].name)) {
+                        this.errors.bg = "Must be a valid image file (.PNG, .JPG or .JPEG allowed).";
+                        valid = false;
+                    }
+                    if (bgFiles.size/1024 > 500) {
+                        this.errors.bg("Image must be smaller than 500KB.");
+                        valid = false;
+                    }
+                }
+
+                return valid;
+            },
+
+            /**
+            * Checks whether any errors should be displayed to the user.
+            * @params {String: Input field that may display error}
+            * @returns {Boolean}
+            */
+            showError: function(field) {
+                return this.errors[field].length > 0 && this.saveButtonStatus === 'Failed';
             }
+
         }
         
     }

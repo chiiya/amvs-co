@@ -18,10 +18,10 @@
     <nav class="nav nav--side nav--fixed nav--slide">
         <ul>
             <li class="dashboard__user">
-                <img class="img--circle" src='{{ $user->avatar }}'/>
+                <img class="img--circle avatar" src='{{ $user->avatar }}'/>
                 <div>
                     <h3><a href="/user/{{ $user->name }}">{{ $user->name }}</a></h3>
-                    <p><a href="/profile">Edit Profile</a></p>
+                    <p><a href="#" v-on:click="display('profile')">Edit Profile</a></p>
                 </div>
             </li>
             <li><a class="elem active" href="#" v-on:click="display('overview', $event)"><i class="material-icons">home</i> Dashboard</a></li>
@@ -35,7 +35,8 @@
             leave-activeclass="animated fadeOut" 
             mode="out-in"
         >
-            <component :is="currentView" :user="user">
+            <component :is="currentView" :user="user" :amvs="amvs"
+                :loading="loading" :display="display" :add-amv="addAmv" :update-avatar="updateAvatar">
             </component>
         </transition>
     </main>

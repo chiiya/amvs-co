@@ -2,7 +2,7 @@
     <div class="col-xs-12">
         <div class="card dashboard__card horizontal is-right">
             <div class="card-image">
-                <img v-bind:src="'/img/poster/' + amv.poster">
+                <img v-bind:src="amv.poster">
             </div>
             <div class="card-stacked">
                 <div class="card-content">
@@ -27,7 +27,9 @@
 
         computed: {
             genres: function() {
-                return this.amv.genres.map(function(elem) { return elem.name; }).join(' - ');
+                return this.amv.genres.map(function(elem) {
+                        return elem.name; 
+                    }).join(' - ');
             }
         }
     }

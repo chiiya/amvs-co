@@ -1,11 +1,11 @@
 import AMVCard from './components/AMVCard.vue';
-import moment from 'moment';
 
 const vm = new Vue({
     el: '#app',
     data: {
         user: {},
-        amvs: []
+        amvs: [],
+        months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     },
 
     components: {
@@ -35,9 +35,9 @@ const vm = new Vue({
             });
         },
         formatDate() {
-            for (var i = 0; i < this.amvs.length; i++) {
-                var date = new Date(this.amvs[i].created_at);
-                this.amvs[i].date = moment(date).format('MMM YYYY');
+            for (let i=0; i < this.amvs.length; i++) {
+                const date = new Date(this.amvs[i].created_at);
+                this.amvs[i].date = this.months[date.getMonth()] + ' ' + date.getFullYear();
             }
         }
     }

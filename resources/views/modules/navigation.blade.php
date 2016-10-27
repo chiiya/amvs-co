@@ -7,7 +7,7 @@
         <li><a href="/contests">Contests</a></li>
 
         @if (Auth::check())
-        <li><a href="/user/{{ Auth::user()->name }}"><img src="{{ Auth::user()->avatar }}" /></a> <a href="/dashboard">View Dashboard</a> | 
+        <li><a href="/user/{{ Auth::user()->name }}"><img class="avatar" src="{{ Auth::user()->avatar }}" /></a> <a href="/dashboard">View Dashboard</a> | 
         <a href="/logout" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a></li>
         <form id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
             {{ csrf_field() }}
