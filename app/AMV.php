@@ -8,7 +8,7 @@ class AMV extends Model
 {
     protected $table = 'amvs';
     protected $fillable = ['title', 'animes', 'music', 'description', 'poster',
-        'bg', 'video', 'user_id', 'url'];
+        'bg', 'video', 'videoHost', 'videoCode', 'download', 'driveId', 'published', 'user_id', 'url'];
     protected $hidden = ['user_id'];
 
 
