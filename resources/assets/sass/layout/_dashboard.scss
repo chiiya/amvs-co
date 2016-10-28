@@ -49,11 +49,13 @@ body.dashboard {
 }
 
 .dashboard__index {
-    .button {
+    h3 + .button {
         float: right;
+        margin-top: 0.85em;
+        margin-right: 30px;
+    }
+    .button {
         margin-right: 15px;
-        margin-top: 0.9em;
-
     }
 }
 
@@ -61,7 +63,7 @@ body.dashboard {
 
     padding-left: 240px;
     margin-top: 50px;
-    .col-xs-12 { padding-left: 0; }
+    .col-xs-12 { padding-left: 0; padding-right: 30px; }
 
     h3 {
         font-family: $font-title;
@@ -187,7 +189,7 @@ body.dashboard {
 .preloader-wrapper { display: block; text-align: center; margin: 0 auto; }
 
 .is-right {
-    margin-left: 50px;
+    margin-left: 30px;
 }
 
 .publishment {
@@ -208,10 +210,12 @@ body.dashboard {
     .card-action a {
         font-size: 1.4rem;
     }
-    i {
-        font-size: 1.4rem;
+    .button--transparent .material-icons {
         vertical-align: middle;
-        margin-bottom: 3px;
+        &.high {
+            font-size: 1.3rem;
+            margin-bottom: 1px;
+        }
     }
     .card-image img {
         height: 170px !important;

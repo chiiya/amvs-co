@@ -40,6 +40,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::delete('/amv/{amvId}/awards/{awardId}', 'AMVController@deleteAward');
     Route::put('/users/{id}', 'UserController@update');
     Route::post('/amvs', 'AMVController@store');
+    Route::delete('/amvs/{id}', 'AMVController@destroy');
 });
 
 Route::get('/users/{id}', 'UserController@get');

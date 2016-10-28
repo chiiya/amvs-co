@@ -70,6 +70,16 @@
             }
         }
 
+        &.button--info {
+            color: $color-secondary;
+            border: 1px solid $color-secondary;
+
+            &:hover, &:active, &:focus {
+                background-color: $color-secondary;
+                color: #fff;
+            }
+        }
+
         &.button--primary {
             color: $color-primary;
             border: 1px solid $color-button-input-border;
@@ -146,6 +156,7 @@
     }
 
     &--success {
+        pointer-events: none;
         background-color: $color-button-success;
         color: #fff !important;
     }
@@ -153,6 +164,7 @@
     &--error {
         background-color: $color-button-error;
         color: #fff !important;
+        pointer-events: none;
     }
 }
 

@@ -27,7 +27,8 @@ class AMVController extends Controller
         }
     }
 
-    public function store(Request $request) {
+    public function store(Request $request) 
+    {
         // Validate request input data
         $this->validate($request, [
             'title' => 'required',
@@ -91,6 +92,18 @@ class AMVController extends Controller
         $amv->user = $user;
     
         return response()->json($amv, 200);
+    }
+
+    public function destroy(Request $request, $id)
+    {
+        $amv = AMV::find($id);
+        if ($amv->user_id !== $request->user()->id) {
+            return response()
+                ->json(['error' => "Unauthorized. Not the owner of this AMV."], 401);
+        }
+
+        $amv->delete();
+        return response()->json("{}", 200);
     }
 
     public function updateAwards(Request $request, $amvId) 

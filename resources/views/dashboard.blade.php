@@ -35,7 +35,11 @@
             leave-activeclass="animated fadeOut" 
             mode="out-in"
         >
-            <component :is="currentView" :user="user" :amvs="amvs"
+            <component 
+                :is="currentView"
+                :user="user" 
+                :amvs="amvs"
+                v-on:deleteAMV="deleteAMV" 
                 :loading="loading" :display="display" :add-amv="addAmv" :update-avatar="updateAvatar">
             </component>
         </transition>
