@@ -22,4 +22,13 @@ function matchDriveUrl(url) {
     return false;
 }
 
+/**
+ * Capitalizes a string ('foo' -> 'Foo')
+ * @params {String}
+ * @returns {String}
+ */
+function capitalize(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 export { matchYoutubeUrl, matchVimeoUrl, matchDriveUrl };

@@ -1,6 +1,6 @@
-import DashboardOverview from './components/dashboard/DashboardOverview.vue';
-import DashboardAMVs from './components/dashboard/DashboardAMVs.vue';
-import EditProfile from './components/dashboard/EditProfile.vue';
+import Overview from './components/dashboard/layouts/Overview.vue';
+import AMVs from './components/dashboard/layouts/AMVs.vue';
+import EditProfile from './components/dashboard/layouts/EditProfile.vue';
 
 const vm = new Vue({
     el: '#app',
@@ -13,8 +13,8 @@ const vm = new Vue({
     },
 
     components: {
-        overview: DashboardOverview,
-        amvs: DashboardAMVs,
+        overview: Overview,
+        amvs: AMVs,
         profile: EditProfile
     },
 

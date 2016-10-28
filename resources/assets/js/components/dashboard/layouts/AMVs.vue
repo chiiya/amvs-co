@@ -20,9 +20,9 @@
 </template>
 
 <script>
-    import DashboardAMVsIndex from './DashboardAMVsIndex.vue';
-    import DashboardAMVsCreate from './DashboardAMVsCreate.vue';
-    import DashboardAMVsContests from './DashboardAMVsContests.vue';
+    import AMVsIndex from './AMVsIndex.vue';
+    import AMVsCreate from './AMVsCreate.vue';
+    import AMVsContests from './AMVsContests.vue';
 
     export default {
         data() {
@@ -35,18 +35,19 @@
         props: ['user', 'amvs', 'loading', 'addAmv'],
 
         components: {
-            index: DashboardAMVsIndex,
-            create: DashboardAMVsCreate,
-            contests: DashboardAMVsContests
+            index: AMVsIndex,
+            create: AMVsCreate,
+            contests: AMVsContests
         },
 
         methods: {
+            /**
+            * Sets the component currently displayed (Index/Create/Edit/Contests)
+            * @params {String: component, Object: AMV for contests and edit}
+            */
             display(view, amv) {
                 this.currentView = view;
                 if (amv) this.amv = amv;
-            },
-            capitalize(string) {
-                return string.charAt(0).toUpperCase() + string.slice(1);
             }
         }
 

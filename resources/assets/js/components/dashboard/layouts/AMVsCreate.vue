@@ -110,7 +110,7 @@
 
 <script>
     import Multiselect from 'vue-multiselect/lib/Multiselect.vue';
-    import { matchYoutubeUrl, matchVimeoUrl, matchDriveUrl } from '../../util/functions';
+    import { matchYoutubeUrl, matchVimeoUrl, matchDriveUrl } from '../../../util/functions';
 
     export default {
         data() {

@@ -48,8 +48,8 @@
 </template>
 
 <script>
-    import ContestSelect from './ContestSelect.vue';
-    import NewContestSelect from './NewContestSelect.vue';
+    import ContestSelect from '../modules/ContestSelect.vue';
+    import NewContestSelect from '../modules/NewContestSelect.vue';
 
     export default {
         data() {
