@@ -20,10 +20,11 @@ const vm = new Vue({
 
     methods: {
         loadData() {
-            this.$http.get('/api/users/' + document.querySelector("meta[name='user']").getAttribute('id')).then((response) => {
+            let id = document.querySelector("meta[name='user']").getAttribute('id');
+            this.$http.get(`/api/users/${id}`).then((response) => {
                 this.user = response.body;
 
-                this.$http.get('/api/amvs?user='+this.user.id).then((response) => {
+                this.$http.get(`/api/amvs?user=${this.user.id}`).then((response) => {
                     this.amvs = response.body;
                     this.formatDate();
                 }, (response) => {

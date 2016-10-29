@@ -20,11 +20,7 @@
                         Contests
                         <i class="material-icons high">star</i>
                     </a>
-                    <a class="button button--square button--danger button--transparent"
-                        @click="deleteAMV" v-bind:disabled="deleteButtonDisabled" v-bind:class="deleteButtonClasses">
-                        {{ deleteButtonStatus }}
-                        <i v-if="!deleteButtonDisabled" class="material-icons">close</i>  
-                    </a>
+                    <delete v-on:delete="deleteAmv" :url="'/amvs/'+amv.id"></delete>
                 </div>
             </div>
         </div>
@@ -32,21 +28,9 @@
 </template>
 
 <script>
+    import LoadingDeleteButton from './LoadingDeleteButton.vue';
+
     export default {
-        data() {
-            return {
-                /**
-                * String value of the delete button.
-                * @type {String}
-                */
-                deleteButtonStatus: 'Delete',
-                /**
-                * Disabled status of the delete button.
-                * @type {Boolean}
-                */
-                deleteButtonDisabled: false
-            }
-        }
 
         props: ['amv', 'user', 'display'],
 
@@ -56,36 +40,15 @@
             * @returns {String}
             */
             genres: function() {
-                return this.amv.genres.map(function(elem) {
-                        return elem.name; 
-                    }).join(' - ');
-            },
-            /**
-            * Possible delete button classes, depending on the value of deleteButtonStatus
-            * @returns {Object}
-            */
-            deleteButtonClasses: function() {
-                return {
-                    'button--loading': this.deleteButtonStatus === 'Deleting...',
-                    'button--error': this.deleteButtonStatus === 'Failed'
-                }
-            }  
+                return this.amv.genres.map(elem => elem.name).join(' - ');
+            }
         },
 
-        methods: {
-            deleteAMV: function() {
-                this.buttonDisabled = true;
-                this.buttonStatus = 'Deleting...';
+        components: { delete: LoadingDeleteButton },
 
-                this.$http.delete('/amvs/' + this.amv.id, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }).then((response) => {
-                    this.remove(this.contest);
-                }, (response) => {
-                    this.buttonStatus = 'Failed';
-                });
+        methods: {
+            deleteAmv: function() {
+                console.log("AMV deleted!");
             }
         }
     }

@@ -175,7 +175,7 @@
 
                 // Laravel bug: multipart/form-data needs to be POST. Specify custom method PUT.
                 formData.append('_method', 'PUT');
-                this.$http.post('/users/' + this.user.id, formData, {
+                this.$http.post(`/users/${this.user.id}`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         'Accept': 'application/json'

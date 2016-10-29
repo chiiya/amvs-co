@@ -38,8 +38,7 @@
             <component 
                 :is="currentView"
                 :user="user" 
-                :amvs="amvs"
-                v-on:deleteAMV="deleteAMV" 
+                :amvs="amvs" 
                 :loading="loading" :display="display" :add-amv="addAmv" :update-avatar="updateAvatar">
             </component>
         </transition>

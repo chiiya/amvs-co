@@ -15,11 +15,6 @@
                 track-by="name">
             </multiselect>
         </div>
-        <div v-if="selected" class="col-xs-12 col-sm-5">
-            <label for="award">Award / Placement</label>
-            <input id="award" v-model="selected.award" 
-                placeholder="Contest Award or Placement" type="text">
-        </div>
     </div>
 </template>
 

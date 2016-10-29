@@ -10,7 +10,6 @@
                         :amv_id="amv.id" 
                         :key="contest"
                         :remove="remove"
-                        :disabled="buttonDisabled" 
                         :notify-change="notifyChange"
                         class="contest-list-item">
                     </contest>
@@ -22,11 +21,12 @@
                     </newcontest>
                 <div class="row">
                     <div class="col-xs-12">
-                        <button id="submit" v-bind:disabled="buttonDisabled"
+                        <button id="submit" v-bind:disabled="saveButtonDisabled"
                             class="button button--square z-depth-1"
-                            v-bind:class="buttonClasses"
+                            v-bind:class="buttonClasses" 
                             @click="submit">
-                            {{ buttonStatus }}</button>
+                            {{ saveButtonStatus }}
+                        </button>
                         <button id="cancel" @click="display('index')" 
                             class="button button--square button--transparent button--primary">
                             {{ cancelButtonStatus }} </button>
@@ -37,7 +37,6 @@
                         <p v-for="error in submitErrors" class="error">
                             {{ error }}
                         </p>
-                        <div> {{ htmlError }}</div>
                     </div>
                 </div>
             </div>
@@ -50,14 +49,15 @@
 <script>
     import ContestSelect from '../modules/ContestSelect.vue';
     import NewContestSelect from '../modules/NewContestSelect.vue';
+    import LoadingSaveButton from '../modules/LoadingSaveButton.vue';
 
     export default {
         data() {
             return {
                 contestList: [],
                 updatedAMV: {},
-                buttonDisabled: false,
-                buttonStatus: 'Save',
+                saveButtonDisabled: false,
+                saveButtonStatus: 'Save',
                 cancelButtonStatus: 'Cancel',
                 submitErrors: []
             }
@@ -67,22 +67,23 @@
 
         computed: {
             /**
-            * Possible Save button classes, depending on the value of buttonStatus
+            * Possible Save button classes, depending on the value of saveButtonStatus
             * @returns {Object}
             */
             buttonClasses: function() {
                 return {
-                    'button--primary': this.buttonStatus === 'Save' || this.buttonStatus === 'Saving...',
-                    'button--loading': this.buttonStatus === 'Saving...',
-                    'button--success': this.buttonStatus === 'Saved',
-                    'button--error': this.buttonStatus === 'Failed'
+                    'button--primary': this.saveButtonStatus === 'Save' || this.saveButtonStatus === 'Saving...',
+                    'button--loading': this.saveButtonStatus === 'Saving...',
+                    'button--success': this.saveButtonStatus === 'Saved',
+                    'button--error': this.saveButtonStatus === 'Failed'
                 }
             }
         },
 
         components: {
             contest: ContestSelect,
-            newcontest: NewContestSelect
+            newcontest: NewContestSelect,
+            save: LoadingSaveButton
         },
 
         mounted: function () {
@@ -124,25 +125,24 @@
             * Performs PUT request and updates button status accordingly.
             */
             submit() {
-                this.buttonDisabled = true;
-                this.buttonStatus = 'Saving...';
+                this.saveButtonDisabled = true;
+                this.saveButtonStatus = 'Saving...';
 
-                this.$http.put('/amv/' + this.amv.id + '/awards', this.updatedAMV, {
+                this.$http.put(`/amv/${this.amv.id}/awards`, this.updatedAMV, {
                     headers: {
                         'Content-Type': 'application/json'
                     }
                 }).then((response) => {
-                    this.buttonStatus = 'Saved';
+                    this.saveButtonStatus = 'Saved';
                     this.cancelButtonStatus = 'Back';
                 }, (response) => {
-                    this.buttonStatus = 'Failed';
+                    this.saveButtonStatus = 'Failed';
                     if (typeof response.body === 'object') {
                         for (let key in response.body) {
                             this.submitErrors.push(response.body[key][0]);
                         }
                     } else {
                         this.submitErrors.push("Server Error. Please try again later.");
-                        this.htmlError = response.body;
                     }
                 });
             },
@@ -151,9 +151,11 @@
             * will be reset, so that the user can save additional changes. 
             */
             notifyChange() {
-                this.buttonDisabled = false;
-                this.buttonStatus = 'Save';
-                this.cancelButtonStatus = 'Cancel';
+                if (this.saveButtonDisabled) {
+                    this.saveButtonDisabled = false;
+                    this.saveButtonStatus = 'Save';
+                    this.cancelButtonStatus = 'Cancel';
+                }
             }
         },
     }

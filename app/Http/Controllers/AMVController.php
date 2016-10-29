@@ -124,7 +124,7 @@ class AMVController extends Controller
             }
         }
 
-        return response()->json(["message" => "AMV updated."], 200);
+        return response()->json($amv->contests, 200);
     }
 
     public function deleteAward(Request $request, $amvId, $awardId) {

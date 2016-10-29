@@ -39,7 +39,8 @@ const vm = new Vue({
             }  
         },
         loadData() {
-            this.$http.get('/users/' + document.querySelector("meta[name='user']").getAttribute('id')).then((response) => {
+            let id = document.querySelector("meta[name='user']").getAttribute('id');
+            this.$http.get(`/users/${id}`).then((response) => {
                 this.user = response.body;
                 this.$http.get('/api/amvs?user='+this.user.id).then((response) => {
                     this.loading = false;

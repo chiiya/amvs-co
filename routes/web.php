@@ -36,7 +36,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/dashboard', 'UserController@showDashboard')->name('dashboard');
     Route::get('/profile', 'UserController@showProfile')->name('profile');
     
-    Route::put('/amv/{amvId}/awards', 'AMVController@updateAwards');
+    Route::put('/amv/{id}/awards', 'AMVController@updateAwards');
     Route::delete('/amv/{amvId}/awards/{awardId}', 'AMVController@deleteAward');
     Route::put('/users/{id}', 'UserController@update');
     Route::post('/amvs', 'AMVController@store');
