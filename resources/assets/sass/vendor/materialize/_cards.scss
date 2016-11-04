@@ -144,16 +144,13 @@
     p {
       margin: 0;
     }
-    .card-title {
-      line-height: 48px;
-    }
   }
 
   .card-action {
     position: relative;
     background-color: inherit;
     border-top: 1px solid rgba(160,160,160,.2);
-    padding: $card-padding;
+    padding: 20px 20px;
   }
 
   .card-reveal {

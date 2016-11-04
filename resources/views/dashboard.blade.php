@@ -37,9 +37,7 @@
         >
             <component 
                 :is="currentView"
-                :user="user" 
-                :amvs="amvs" 
-                :loading="loading" :display="display" :add-amv="addAmv" :update-avatar="updateAvatar">
+                :display="display">
             </component>
         </transition>
     </main>

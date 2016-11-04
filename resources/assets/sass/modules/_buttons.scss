@@ -17,7 +17,6 @@
     &--rounded {
         text-transform: uppercase;
         letter-spacing: 0.1rem;
-        font-family: $font-secondary;
         border-radius: 2rem;
         padding: 13px 30px;
     }
@@ -45,11 +44,11 @@
     }
 
     &--secondary {
-        background-color: $color-accent;
+        background-color: darken($color-accent, 10%);
         color: #fff;
 
         &:hover, &:active, &:focus {
-            background-color: darken($color-accent, 10%);
+            background-color: darken($color-accent, 20%);
             color: #fff;
         }
     }
@@ -170,10 +169,12 @@
 
 
 a.button.icon {
-    padding-left: 2rem;
-}
+    font-size: 1.5rem;
 
-a.button.icon span{
-    padding-left: 36px;
-    background: url(../img/play.png) no-repeat;
+    i {
+        font-size: 1.8rem;
+        vertical-align: middle;
+        margin-bottom: 4px;
+        padding-right: 5px;
+    }
 }

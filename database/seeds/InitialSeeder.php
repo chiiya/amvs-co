@@ -5,6 +5,7 @@ use App\User;
 use App\AMV;
 use App\Contest;
 use App\Genre;
+use App\Award;
 
 class InitialSeeder extends Seeder
 {
@@ -65,7 +66,12 @@ class InitialSeeder extends Seeder
             'year' => 2016
         ]);
 
-        $affinity->contests()->attach(1, ['award' => 'Best Drama']);
+        $award = Award::create([
+            'award' => 'Best Drama',
+            'amv_id' => $affinity->id,
+            'contest_id' => $contest->id
+        ]);
+
         $affinity->genres()->attach([1, 4, 11]);
 
         $reliance->genres()->attach(1);

@@ -1,27 +1,26 @@
-import Overview from './components/dashboard/layouts/Overview.vue';
-import AMVs from './components/dashboard/layouts/AMVs.vue';
-import EditProfile from './components/dashboard/layouts/EditProfile.vue';
+import store from './store'
+import vueSmoothScroll from 'vue-smoothscroll'
+import Overview from './components/dashboard/layouts/Overview.vue'
+import EditProfile from './components/dashboard/layouts/EditProfile.vue'
+import AMVs from './components/dashboard/layouts/AMVs.vue'
+
+Vue.use(vueSmoothScroll);
 
 const vm = new Vue({
+    store, 
     el: '#app',
     data: {
-        currentView: 'overview',
-        user: {},
-        amvs: [],
-        months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-        loading: true
+        currentView: 'overview'
     },
 
     components: {
         overview: Overview,
-        amvs: AMVs,
-        profile: EditProfile
+        profile: EditProfile,
+        amvs: AMVs
     },
 
     mounted: function () {
-        this.$nextTick(function () {
-            this.loadData();
-        })
+        this.loadData();
     },
 
     methods: {
@@ -34,42 +33,16 @@ const vm = new Vue({
             if (event) {
                 const target = event.currentTarget;
                 target.classList.add('active');
-            } else {
-                
-            }  
+            }
         },
+
+        /**
+         * Load user and AMV data and store it in Vuex
+         */
         loadData() {
-            let id = document.querySelector("meta[name='user']").getAttribute('id');
-            this.$http.get(`/users/${id}`).then((response) => {
-                this.user = response.body;
-                this.$http.get('/api/amvs?user='+this.user.id).then((response) => {
-                    this.loading = false;
-                    this.amvs = response.body;
-                    this.formatDate();
-                }, (response) => {
-                    console.log("Couldn't load AMVs");
-                });
-            }, (response) => {
-                console.log("Couldn't load user info.");
-            });
-        },
-        updateAvatar(path) {
-            this.user.avatar = path;
-            const avatars = document.getElementsByClassName('avatar');
-            for (let i=0; i<avatars.length; i++) {
-                avatars[i].src = path;
-            }
-        },
-        formatDate() {
-            for (let i = 0; i < this.amvs.length; i++) {
-                const date = new Date(this.amvs[i].created_at);
-                this.amvs[i].date = this.months[date.getMonth()] + ' ' + date.getFullYear();
-            }
-        },
-        addAmv(amv) {
-            const date = new Date(amv.created_at);
-            amv.date = this.months[date.getMonth()] + ' ' + date.getFullYear();
-            this.amvs.push(amv);
+            const id = document.querySelector("meta[name='user']").getAttribute('id');
+            this.$store.dispatch('FETCH_USER', { id });
+            this.$store.dispatch('FETCH_AMVS', { id });
         }
     }
 })

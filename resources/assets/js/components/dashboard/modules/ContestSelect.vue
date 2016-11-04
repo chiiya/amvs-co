@@ -6,29 +6,36 @@
         </div>
         <div class="col-xs-12 col-sm-5">
             <label for="award">Award / Placement</label>
-            <input id="award" v-model="contest.award" v-on:input="notifyChange" 
+            <input id="award" v-model="award.award" v-on:input="notifyChange" 
                 placeholder="Contest Award or Placement" type="text">
         </div>
         <div class="col-xs-12 col-sm-2">
             <label class="delete">Delete</label>
-            <delete v-on:remove="deleteContest" :url="'/amv/' + amv_id + '/awards/' + contest.award_id"></delete>
+            <a class="button button--square button--danger button--transparent"
+                @click="deleteAward" v-bind:disabled="deleteButtonDisabled" v-bind:class="deleteButtonClasses">
+                {{ deleteButtonStatus }}
+                <i v-if="!deleteButtonDisabled" class="material-icons">close</i>  
+            </a>
         </div>
     </div>
 </template>
 
 <script>
-    import LoadingDeleteButton from './LoadingDeleteButton.vue';
-
     export default {
 
         data() {
             return {
-                award: ''
+                /**
+                * String value of the delete button.
+                * @type {String}
+                */
+                deleteButtonStatus: 'Delete',
+                /**
+                * Disabled status of the delete button.
+                * @type {Boolean}
+                */
+                deleteButtonDisabled: false
             }
-        },
-
-        mounted: function () {
-            this.award = this.contest.award;
         },
 
         props: {
@@ -36,7 +43,7 @@
             * Contest shown in current row.
             * @type {Object}
             */
-            contest: {
+            award: {
                 type: Object,
                 default: null
             },
@@ -60,7 +67,7 @@
             * ID of the AMV for the current contest. Necessary for delete-URL.
             * @type {Function}
             */
-            amv_id: {
+            amvid: {
                 type: Number
             }
         },
@@ -71,11 +78,26 @@
             * @returns {String} 
             */
             name: function() {
-                return `${this.contest name} ${this.contest.year}`;
-            }
+                return `${this.award.contest.name} ${this.award.contest.year}`;
+            },
+            /**
+            * Checks if the current contest award is local or not (i.e. has not been saved to the server yet).
+            * @returns {Boolean}
+            */
+            isLocal: function() {
+                return (!this.award.hasOwnProperty('id'));
+            },
+            /**
+            * Possible delete button classes, depending on the value of deleteButtonStatus
+            * @returns {Object}
+            */
+            deleteButtonClasses: function() {
+                return {
+                    'button--loading': this.deleteButtonStatus === 'Deleting...',
+                    'button--error': this.deleteButtonStatus === 'Failed'
+                }
+            } 
         },
-
-        components: { delete: LoadingDeleteButton },
 
         methods: {
             /**
@@ -83,8 +105,20 @@
             * Performs DELETE request and updates button status accordingly. Once successful,
             * the contest gets removed from the parent amvs.contests instance and thus from the view.
             */
-            deleteContest() {
-                this.remove(this.contest);
+            deleteAward() {
+                this.deleteButtonDisabled = true;
+                this.deleteButtonStatus = 'Deleting...';
+                if (this.isLocal) {
+                    this.remove(this.award);
+                    return;
+                }
+                this.$store.dispatch('DESTROY_AWARD', this.award)
+                    .then(() => {
+                        this.remove(this.award);
+                    })
+                    .catch((error) => {
+                        this.deleteButtonStatus = 'Failed';
+                    });
             }
         }
     }

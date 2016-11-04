@@ -11,16 +11,21 @@
                     <p>{{ genres }}</p>
                 </div>
                 <div class="card-action">
-                    <a class="button button--square button--info button--transparent">
+                    <a class="button button--square button--info button--transparent"
+                        @click="display('edit', amv.id)">
                         Edit
                         <i class="material-icons high">edit</i>
                     </a>
                     <a class="button button--square button--info button--transparent"
-                        @click="display('contests', amv)">
+                        @click="display('contests', amv.id)">
                         Contests
                         <i class="material-icons high">star</i>
                     </a>
-                    <delete v-on:delete="deleteAmv" :url="'/amvs/'+amv.id"></delete>
+                    <a class="button button--square button--danger button--transparent"
+                        @click="deleteAmv" v-bind:disabled="deleteButtonDisabled" v-bind:class="deleteButtonClasses">
+                        {{ deleteButtonStatus }}
+                        <i v-if="!deleteButtonDisabled" class="material-icons">close</i>  
+                    </a>
                 </div>
             </div>
         </div>
@@ -28,11 +33,24 @@
 </template>
 
 <script>
-    import LoadingDeleteButton from './LoadingDeleteButton.vue';
 
     export default {
+        data() {
+            return {
+                /**
+                * String value of the delete button.
+                * @type {String}
+                */
+                deleteButtonStatus: 'Delete',
+                /**
+                * Disabled status of the delete button.
+                * @type {Boolean}
+                */
+                deleteButtonDisabled: false
+            }
+        },
 
-        props: ['amv', 'user', 'display'],
+        props: ['amv', 'display'],
 
         computed: {
             /**
@@ -40,15 +58,39 @@
             * @returns {String}
             */
             genres: function() {
-                return this.amv.genres.map(elem => elem.name).join(' - ');
+                if (this.amv.genres) {
+                    return this.amv.genres.map(function(elem) { return elem.name; }).join(' - ');
+                } else return "";
+            },
+            user() {
+                return this.$store.state.user;
+            },
+            /**
+            * Possible delete button classes, depending on the value of deleteButtonStatus
+            * @returns {Object}
+            */
+            deleteButtonClasses: function() {
+                return {
+                    'button--loading': this.deleteButtonStatus === 'Deleting...',
+                    'button--error': this.deleteButtonStatus === 'Failed'
+                }
             }
         },
 
-        components: { delete: LoadingDeleteButton },
-
         methods: {
+            /**
+            * Delete currently displayed AMV
+            */
             deleteAmv: function() {
-                console.log("AMV deleted!");
+                this.deleteButtonDisabled = true;
+                this.deleteButtonStatus = 'Deleting...';
+                this.$store.dispatch('DESTROY_AMV', this.amv.id)
+                    .then((response) => {
+                        this.deleteButtonStatus = 'Saved';
+                    })
+                    .catch((error) => {
+                        this.deleteButtonStatus = 'Failed';
+                    });
             }
         }
     }

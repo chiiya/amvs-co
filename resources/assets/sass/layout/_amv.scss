@@ -5,14 +5,20 @@ AMV - DETAILPAGE
 body.amv {
     background-color: #100b0f;
     header {
+        i {
+            font-size: 1.6rem;
+            vertical-align: middle;
+            margin-bottom: 4px;
+        }
         a {
-        font-family: $font-secondary;
-        font-size: 1.8rem;
+        font-family: $font-primary;
+        font-weight: 300;
+        font-size: 1.6rem;
         color: white;
         text-decoration: none;
         &:hover, :active, :focus {
             text-decoration: none;
-            color: $color-text-light;
+            color: $color-accent;
         } 
         }
         .container {

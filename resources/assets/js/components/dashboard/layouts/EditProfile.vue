@@ -68,9 +68,10 @@
                 </div>
                 <div v-if="showErrors" class="row">
                     <div class="col-xs-12">
-                        <p v-for="error in validationErrors" class="error">
+                        <p v-for="error in submitErrors" class="error">
                             {{ error }}
                         </p>
+                        <pre>{{ megaError }}</pre>
                     </div>
                 </div>
             </div>
@@ -94,21 +95,22 @@
                 saveButtonDisabled: false,
                 saveButtonStatus: 'Save',
                 cancelButtonStatus: 'Cancel',
-                validationErrors: [],
+                submitErrors: [],
                 password: '',
-                confirmPassword: ''
+                confirmPassword: '',
+                megaError: ''
             }
         },
 
-        props: ['user', 'display', 'updateAvatar'],
+        props: ['display'],
 
         computed: {
             /**
             * Get the avatar URL. In case the user doesn't have an avatar, show default one.
             * @returns {String}
             */
-            avatar: function() {
-                return this.user.avatar || '/img/avatars/default.jpg';
+            avatar() {
+                return this.userObject.avatar || '/img/avatars/default.jpg'
             },
             /**
             * Possible Save button classes, depending on the value of saveButtonStatus
@@ -123,14 +125,14 @@
                 }
             },
             showErrors: function() {
-                return this.validationErrors.length > 0 && this.saveButtonStatus === 'Failed';
+                return this.submitErrors.length > 0 && this.saveButtonStatus === 'Failed';
             }
         },
 
         mounted: function() {
-            this.userObject = this.user;
-            this.baywatch(['user.location', 'user.studio', 'user.website', 'user.email',
-                'password'], this.notifyChange.bind(this));
+            this.userObject = JSON.parse(JSON.stringify(this.$store.state.user));
+            this.baywatch(['userObject.location', 'userObject.studio', 'userObject.website', 
+                'userObject.email', 'password'], this.notifyChange.bind(this));
         },
 
         methods: {
@@ -142,17 +144,17 @@
                 const files = elAvatar.files;
                 const formData = new FormData();
 
-                formData.append('location', this.user.location);
-                formData.append('studio', this.user.studio);
-                formData.append('website', this.user.website);
+                formData.append('location', this.userObject.location);
+                formData.append('studio', this.userObject.studio);
+                formData.append('website', this.userObject.website);
 
                 // Check whether email field is empty
-                if (this.user.email.length === 0) {
+                if (this.userObject.email.length === 0) {
                     this.saveButtonStatus = 'Failed';
                     this.pushError("You must specify an email address.");
                     return;
                 }
-                formData.append('email', this.user.email);
+                formData.append('email', this.userObject.email);
 
                 // Check whether a new password has been entered and if they match
                 if (this.password.length > 0) {
@@ -175,20 +177,27 @@
 
                 // Laravel bug: multipart/form-data needs to be POST. Specify custom method PUT.
                 formData.append('_method', 'PUT');
-                this.$http.post(`/users/${this.user.id}`, formData, {
+                this.$http.post(`/api/users/${this.userObject.id}`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         'Accept': 'application/json'
                     }
                 }).then((response) => {
+                    this.userObject.avatar = response.body.avatar;
+                    this.$store.commit('SET_USER', this.userObject);
                     this.updateAvatar(response.body.avatar);
                     this.saveButtonStatus = 'Saved';
                     this.cancelButtonStatus = 'Back';
-                }, (response) => {
+                }, (error) => {
                     this.saveButtonStatus = 'Failed';
-                    for (let key in response.body) {
-                        this.pushError(response.body[key][0]);
-                    }
+                    if (typeof error.body === 'object') {
+                            for (let key in error.body) {
+                                this.submitErrors.push(error.body[key][0]);
+                            }
+                        } else {
+                            this.megaError = error.body;
+                            this.submitErrors.push(error.status + ": Server Error. Please try again later.");
+                        }
                 });
             },
             validateImage: function(file) {
@@ -232,6 +241,12 @@
             pushError: function(error) {
                 if (this.validationErrors.indexOf(error) === -1) {
                     this.validationErrors.push(error);
+                }
+            },
+            updateAvatar: function(path) {
+                const avatars = document.getElementsByClassName('avatar');
+                for (let i=0; i<avatars.length; i++) {
+                    avatars[i].src = path;
                 }
             }
         }

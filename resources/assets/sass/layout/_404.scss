@@ -1,8 +1,8 @@
 body.error404 {
     background-image: url('/img/crossword.png');
     background-repeat: repeat;
-    font-family: $font-title;
-    img {
+    font-family: $font-primary;
+    img.error {
         margin: 50px auto;
     }
     .wrapper {

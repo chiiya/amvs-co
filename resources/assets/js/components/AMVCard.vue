@@ -35,7 +35,9 @@
 
         computed: {
             genres: function() {
-                return this.amv.genres.map(function(elem) { return elem.name; }).join(' - ');
+                if (this.amv.genres) {
+                    return this.amv.genres.map(function(elem) { return elem.name; }).join(' - ');
+                } else return "";
             }
         },
 

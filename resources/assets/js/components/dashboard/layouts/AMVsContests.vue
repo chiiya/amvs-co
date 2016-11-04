@@ -1,14 +1,14 @@
 <template>
     <section class="dashboard__form is-right">
-        <h3>Edit AMV Contests: {{ amv.title }} </h3>
+        <h3>Edit AMV Awards: {{ updatedAMV.title }} </h3>
         <div class="row">
             <div class="col-xs-12">
                 <transition-group name="contest-list" tag="div" mode="out-in">
                     <contest 
-                        v-for="contest in updatedAMV.contests" 
-                        :contest="contest"
-                        :amv_id="amv.id" 
-                        :key="contest"
+                        v-for="award in updatedAMV.awards" 
+                        :award="award"
+                        :amvid="amvId" 
+                        :key="award"
                         :remove="remove"
                         :notify-change="notifyChange"
                         class="contest-list-item">
@@ -16,7 +16,7 @@
                </transition-group>
                 <div class="contest-list-item">
                     <newcontest 
-                        :contest-list="contestList"
+                        :contest-list="contests"
                         :add="add">
                     </newcontest>
                 <div class="row">
@@ -49,21 +49,23 @@
 <script>
     import ContestSelect from '../modules/ContestSelect.vue';
     import NewContestSelect from '../modules/NewContestSelect.vue';
-    import LoadingSaveButton from '../modules/LoadingSaveButton.vue';
 
     export default {
         data() {
             return {
-                contestList: [],
-                updatedAMV: {},
+                updatedAMV: {
+                    id: '',
+                    awards: []
+                },
                 saveButtonDisabled: false,
                 saveButtonStatus: 'Save',
                 cancelButtonStatus: 'Cancel',
-                submitErrors: []
+                submitErrors: [],
+                successCount: 0
             }
         },
 
-        props: ['user', 'display', 'amv'],
+        props: ['display', 'amvId'],
 
         computed: {
             /**
@@ -77,74 +79,123 @@
                     'button--success': this.saveButtonStatus === 'Saved',
                     'button--error': this.saveButtonStatus === 'Failed'
                 }
+            },
+            contests() {
+                return this.$store.state.contests;
             }
         },
 
         components: {
             contest: ContestSelect,
-            newcontest: NewContestSelect,
-            save: LoadingSaveButton
+            newcontest: NewContestSelect
         },
 
         mounted: function () {
-            this.loadContests();
-            this.updatedAMV = this.amv;
+            if (!this.contests.length > 0) this.loadContests();
+            this.updatedAMV = JSON.parse(JSON.stringify(this.getAMV(this.amvId)));
         },
 
         methods: {
             /**
+            * Grab an AMV from Vuex by its ID.
+            */
+            getAMV(id) {
+                return this.$store.state.amvs.find(x => x.id === id);
+            },
+            /**
             * Loads a list of all available contests.
             */
             loadContests() {
-                this.$http.get('/api/contests').then((response) => {
-                    this.contestList = response.body;
-                }, (response) => {
-                    console.log("Couldn't load contests.");
-                });
+                this.$store.dispatch('FETCH_CONTESTS');
             },
             /**
             * Adds a new entry to the contests array. Gets called from the NewContestSelect component.
             */
             add(contest) {
-                this.updatedAMV.contests.push(contest);
+                const award = {
+                    award: '',
+                    amv_id: this.amvId,
+                    contest_id: contest.id,
+                    contest: contest
+                }
+                this.updatedAMV.awards.push(award);
                 this.notifyChange();
             },
             /**
             * Removes a contest entry from the contests array. Gets called once the ContestSelect
             * component has performed a successful delete.
             */
-            remove(contest) {
-                var index = this.updatedAMV.contests.indexOf(contest);
+            remove(award) {
+                var index = this.updatedAMV.awards.indexOf(award);
                  
                 if (index>=0) {
-                    this.updatedAMV.contests.splice(index, 1);
+                    this.updatedAMV.awards.splice(index, 1);
                 }
             },
             /**
-            * Updates the entire amv.contests array. Gets called when user clicks on Save button.
+            * Updates the entire updatedAMV.awards array. Gets called when user clicks on Save button.
             * Performs PUT request and updates button status accordingly.
             */
             submit() {
                 this.saveButtonDisabled = true;
                 this.saveButtonStatus = 'Saving...';
-
-                this.$http.put(`/amv/${this.amv.id}/awards`, this.updatedAMV, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }).then((response) => {
-                    this.saveButtonStatus = 'Saved';
-                    this.cancelButtonStatus = 'Back';
-                }, (response) => {
+                if (!this.validate()) {
                     this.saveButtonStatus = 'Failed';
-                    if (typeof response.body === 'object') {
-                        for (let key in response.body) {
-                            this.submitErrors.push(response.body[key][0]);
+                    this.submitErrors.push("No duplicate awards allowed.");
+                    return;
+                } 
+                let processed = 0;
+                const max = this.updatedAMV.awards.length;
+                const oldAMV = this.getAMV(this.amvId);
+                for (let i=0; i<max; i++) {
+                    let current = this.updatedAMV.awards[i];
+                    if (current.hasOwnProperty('id')) {
+                        if (oldAMV.awards[i].award !== current.award) {
+                            this.$store.dispatch('PATCH_AWARD', current)
+                            .then(() => {
+                                processed++;
+                                if (processed === max) {
+                                    this.notifySuccess();
+                                }
+                            })
+                            .catch((error) => {
+                                this.showErrors(error);
+                            })
+                        } else {
+                            
+                            processed++;
+                            if (processed === max) {
+                                this.notifySuccess();
+                            }
                         }
                     } else {
-                        this.submitErrors.push("Server Error. Please try again later.");
+                        this.$store.dispatch('STORE_AWARD', current)
+                            .then((response) => {
+                                Vue.set(current, 'id', response.id);
+                                this.$store.commit('ADD_AWARD', current);
+                                processed++;
+                                if (processed === max) {
+                                    this.notifySuccess();
+                                }
+                            })
+                            .catch((error) => {
+                                this.showErrors(error);
+                            });
                     }
-                });
+                }
+            },
+
+            validate() {
+                let tmpArr = [];
+                for(let obj in this.updatedAMV.awards) {
+                    const contest = this.updatedAMV.awards[obj].contest_id + ' | ' + this.updatedAMV.awards[obj].award;
+                    if(tmpArr.indexOf(contest) < 0){ 
+                        tmpArr.push(contest);
+                    } else {
+                        return false;
+                    }
+                }
+                return true
             },
             /**
             * Gets called from child components. If a user input change has been made, the Save button
@@ -155,6 +206,23 @@
                     this.saveButtonDisabled = false;
                     this.saveButtonStatus = 'Save';
                     this.cancelButtonStatus = 'Cancel';
+                }
+            },
+
+            notifySuccess() {
+                this.saveButtonStatus = 'Saved';
+                this.cancelButtonStatus = 'Back';
+            },
+
+            showErrors(error) {
+                if (typeof error.status === 'undefined') return;
+                this.saveButtonStatus = 'Failed';
+                if (typeof error.body === 'object') {
+                    for (let key in error.body) {
+                        this.submitErrors.push(error.body[key][0]);
+                    }
+                } else {
+                    this.submitErrors.push(error.status + ": Server Error. Please try again later.");
                 }
             }
         },

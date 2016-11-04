@@ -58,7 +58,7 @@ $element-top-margin: $gutter-width/3 !default;
 $element-bottom-margin: ($gutter-width*2)/3 !default;
 
 // Cards
-$card-padding: 20px !default;
+$card-padding: 10px 20px !default;
 $card-bg-color: #fff !default;
 $card-link-color: $color-sidenav-bg;
 $card-link-color-light: lighten($card-link-color, 20%) !default;

@@ -10,6 +10,7 @@
             <h1>{{ $latest->title }}</h1>
 
             <ul>
+                @if (!$latest->genres->isEmpty())
                 <li>
                     @foreach ($latest->genres as $genre)
                         @if ($loop->last)
@@ -19,9 +20,14 @@
                         @endif
                     @endforeach
                 </li>
+                @endif
                 <li>{{ $latest->created_at->format('M Y') }}</li>
             </ul>
-            <a class="button button--rounded button--secondary icon play" href="/user/{{ $user->name }}/{{ $latest->url }}"><span>Watch Now</span></a>
+            <a class="button button--rounded button--secondary icon play" 
+                href="/user/{{ $user->name }}/{{ $latest->url }}">
+                <i class="material-icons">play_circle_outline</i>
+                Watch Now
+            </a>
 @else
     <header>
         <div class="clear"></div>

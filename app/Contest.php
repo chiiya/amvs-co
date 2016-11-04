@@ -10,11 +10,14 @@ class Contest extends Model
     protected $fillable = ['name', 'year'];
 
     protected $hidden = [
-        'created_at', 'updated_at', 'pivot'
+        'created_at', 'updated_at'
     ];
 
-    public function amvs() {
-        return $this->belongsToMany('App\AMV', 'amv_contest', 'contest_id', 'amv_id')
-            ->withPivot('award');
+    /**
+     * One-To-Many Relationship: One Contest has many Awards.
+     */
+    public function awards()
+    {
+        return $this->hasMany('App\Award', 'amv_id');
     }
 }

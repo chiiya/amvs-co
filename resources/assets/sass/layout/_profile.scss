@@ -13,11 +13,44 @@ body.profile {
             margin-bottom: 5rem;
         }
         p {
-            font-family: $font-secondary;
+            font-size: 1.5rem;
+            font-weight: 600;
         }
     }
     .row {
         margin-top: 40px;
+    }
+    .col-xs-12 {
+        margin-bottom: 20px;
+    }
+    .card-image > img {
+        height: 350px;
+        object-fit: cover;
+    }
+    .card-content {
+        min-height: 100px;
+    }
+
+    .card {
+        min-height: 510px;
+        a:not(.button) {
+            color: $color-primary;
+            &:hover, &.focus {
+                color: $color-secondary;
+            }
+        }
+    }
+}
+
+.poster-placeholder {
+    height: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: $color-primary;
+    text-align: center;
+    h3 {
+        color: $color-accent;
     }
 }
 

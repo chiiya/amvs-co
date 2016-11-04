@@ -16,7 +16,7 @@
             </div>
         </div>
         <div class="clearfix"></div>
-        <amv v-for="amv in amvs" :amv="amv" :user="user" :display="display"></amv>
+        <amv v-for="amv in amvs" :amv="amv" :display="display"></amv>
     </section>
 </template>
 
@@ -24,10 +24,19 @@
     import AmvCard from '../modules/AmvCard.vue';
 
     export default {
-        props: ['user', 'display', 'amvs', 'loading'],
+        props: ['display'],
 
         components: {
             amv: AmvCard
+        },
+
+        computed: {
+            amvs() {
+                return this.$store.state.amvs;
+            },
+            loading() {
+                return this.$store.state.loading;
+            }
         }
     }
 </script>

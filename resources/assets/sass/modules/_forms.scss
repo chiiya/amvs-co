@@ -66,8 +66,8 @@ input[type='radio'] {
   margin-left: 0.5rem;
 }
 
-form {
-    p {
+.dashboard__form {
+    p:not(.error) {
         font-size: 1.3rem;
         color: #a9a9a9;
     }

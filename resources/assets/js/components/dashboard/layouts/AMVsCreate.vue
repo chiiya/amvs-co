@@ -2,7 +2,7 @@
     <section class="dashboard__form is-right">
         <h3>Create a new AMV</h3>
         <div class="row">
-            <form class="col-xs-12">
+            <div class="col-xs-12">
                 <div class="row">
                     <div class="col-xs-12 col-sm-6">
                         <label for="title">Title</label>
@@ -17,8 +17,8 @@
                 </div>
                 <div class="row">
                     <div class="col-xs-12">
-                        <label for="animes">Animes</label>
-                        <input id="animes" v-model="amvObject.animes" placeholder="Animes used" type="text" required>
+                        <label for="animes">Anime</label>
+                        <input id="animes" v-model="amvObject.animes" placeholder="List all anime sources" type="text" required>
                         <p v-if="showError('animes')" class="error"> {{ errors.animes }}</p>
                     </div>
                 </div>
@@ -45,7 +45,7 @@
                         <label>Genres</label>
                         <multiselect 
                             :value="amvObject.genres" 
-                            :options="genreList"
+                            :options="genres"
                             :multiple="true" 
                             @input="updateSelected"
                             :close-on-select="false" 
@@ -65,7 +65,7 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-6">
                         <label>Poster</label>
-                        <p>Recommended: 488x642px</p>
+                        <p>Recommended: 1:1.5 width:height ratio, max 500KB</p>
                         <label for="poster" class="button button--square button--input z-depth-1">
                             <i class="material-icons">cloud_upload</i>
                             File {{ poster }}
@@ -103,7 +103,7 @@
                         </p>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
     </section>
 </template>
@@ -140,14 +140,13 @@
                 submitErrors: [],
                 poster: '',
                 bg: '',
-                genreList: [],
                 saveButtonDisabled: false,
                 saveButtonStatus: 'Save',
                 cancelButtonStatus: 'Cancel'
             }
         },
 
-        props: ['user', 'display', 'amvs', 'addAmv'],
+        props: ['display'],
 
         computed: {
             /**
@@ -161,6 +160,9 @@
                     'button--success': this.saveButtonStatus === 'Saved',
                     'button--error': this.saveButtonStatus === 'Failed'
                 }
+            },
+            genres() {
+                return this.$store.state.genres;
             }            
         },
 
@@ -170,6 +172,9 @@
 
         mounted: function () {
             this.loadGenres();
+            this.baywatch(['amvObject.title', 'amvObject.music', 'amvObject.animes', 'amvObject.video',
+                'amvObject.download', 'amvObject.genres', 'amvObject.published'
+                ], this.notifyChange.bind(this));
         },
 
         methods: {
@@ -177,11 +182,7 @@
             * Load a list of available genres to use for the multiselect
             */
             loadGenres() {
-                this.$http.get('/api/genres').then((response) => {
-                    this.genreList = response.body;
-                }, (response) => {
-                    console.log("Couldn't load genres.");
-                });
+                this.$store.dispatch('FETCH_GENRES');
             },
 
             /**
@@ -199,6 +200,7 @@
             */
             showFile(type, event) {
                 this[type] = ' | ' + event.currentTarget.value.replace(/^.*?([^\\\/]*)$/, '$1');
+                this.notifyChange();
             },
 
             /**
@@ -213,6 +215,9 @@
             * Submit the form and create new AMV entry
             */
             submit: function() {
+                for (let key in this.errors) {
+                    this.errors[key] = '';
+                }
                 this.saveButtonDisabled = true;
                 this.saveButtonStatus = 'Saving...';
                 const formData = new FormData();
@@ -252,30 +257,23 @@
                 if (bgFiles && bgFiles[0]) {
                     formData.append('bg', bgFiles[0]);
                 }
-                
-                this.$http.post('/amvs/', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                        'Accept': 'application/json'
-                    }
-                }).then((response) => {
-                    this.saveButtonStatus = 'Saved';
-                    this.cancelButtonStatus = 'Back';
-                    const newAmv = response.body;
-                    newAmv.contests = [];
-                    newAmv.genres = this.amvObject.genres;
-                    this.addAmv(newAmv);
-                }, (response) => {
-                    this.saveButtonStatus = 'Failed';
-                    // If response is JSON print out the errors (e.g. validation)
-                    if (typeof response.body === 'object') {
-                        for (let key in response.body) {
-                            this.submitErrors.push(response.body[key][0]);
+
+                this.$store.dispatch('STORE_AMV', formData)
+                    .then(() => {
+                        this.saveButtonStatus = 'Saved';
+                        this.cancelButtonStatus = 'Back';
+                    })
+                    .catch((error) => {
+                        this.saveButtonStatus = 'Failed';
+                        if (typeof error.body === 'object') {
+                            for (let key in error.body) {
+                                this.submitErrors.push(error.body[key][0]);
+                            }
+                        } else {
+                            this.submitErrors.push("Server Error. Please try again later.");
                         }
-                    } else {
-                        this.submitErrors.push("Server Error. Please try again later.");
-                    }
-                });
+                        
+                    });
             },
 
             /**
@@ -290,8 +288,8 @@
                     this.errors.title = "Please specify a title for your AMV.";
                     valid = false;
                 } else {
-                    for (let i=0; i<this.amvs.length; i++) {
-                        if (this.amvs[i].title.indexOf(this.amvObject.title) > -1) {
+                    for (let i=0; i<this.$store.state.amvs.length; i++) {
+                        if (this.$store.state.amvs[i].title.indexOf(this.amvObject.title) > -1) {
                             this.errors.title = "You already used this title for another AMV. Your title needs to be unique among your AMVs.";
                             valid = false;
                         }
@@ -299,7 +297,7 @@
                 }
                 // Check if anime list is present
                 if (!this.amvObject.animes.length > 0) {
-                    this.errors.animes = "Please list the animes used in the AMV.";
+                    this.errors.animes = "Please list the anime sources used in the AMV.";
                     valid = false;
                 }
                 // Check if music has been specified
@@ -308,7 +306,7 @@
                     valid = false;
                 }
                 // Match input video URL to either Youtube or Vimeo and extract video ID
-                if (this.amvObject.video.length > 0) {
+                if (this.amvObject.video != null &&  this.amvObject.video.length > 0) {
                     const youtube = matchYoutubeUrl(this.amvObject.video);
                     const vimeo = matchVimeoUrl(this.amvObject.video);
 
@@ -324,7 +322,7 @@
                     }
                 }
                 // Match input download URL to Google Drive and extract file ID
-                if (this.amvObject.download.length > 0) {
+                if (this.amvObject.download != null && this.amvObject.download.length > 0) {
                     const drive = matchDriveUrl(this.amvObject.download);
                     if (!drive) {
                         this.errors.download = "Your download URL is not valid. Please use a valid Google Drive shared file URL.";
@@ -365,8 +363,20 @@
             */
             showError: function(field) {
                 return this.errors[field].length > 0 && this.saveButtonStatus === 'Failed';
+            },
+            baywatch: function(props, watcher) {
+                var iterator = function(prop) {
+                    this.$watch(prop, watcher);
+                };
+                props.forEach(iterator, this);
+            },
+            notifyChange: function() {
+                if (this.saveButtonDisabled) {
+                    this.saveButtonDisabled = false;
+                    this.saveButtonStatus = 'Save';
+                    this.cancelButtonStatus = 'Cancel';
+                }
             }
-
         }
         
     }

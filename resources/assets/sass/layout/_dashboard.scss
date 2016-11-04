@@ -18,7 +18,7 @@ body.dashboard {
         will-change: left;
         ul {
             padding-left: 0;
-            font-family: $font-title;
+            font-family: $font-primary;
         }
         li:not(:first-of-type) {
             i {
@@ -66,7 +66,7 @@ body.dashboard {
     .col-xs-12 { padding-left: 0; padding-right: 30px; }
 
     h3 {
-        font-family: $font-title;
+        font-family: $font-primary;
         font-weight: 900;
         color: $color-sidenav-bg;
         font-size: 1.6rem;
@@ -74,7 +74,7 @@ body.dashboard {
     }
 
     header + p {
-        font-family: $font-title;
+        font-family: $font-primary;
         font-weight: 300;
         color: $color-text-light;
         margin-top: 1em;
@@ -90,9 +90,14 @@ body.dashboard {
     }
 }
 
+img.preview {
+    max-height: 278px;
+    max-width: 100%;
+}
+
 .multiselect__tags {
     background: transparent !important;
-    padding-top: 0 !important;
+    padding-top: 5px !important;
     border: 0.1rem solid #d1d1d1 !important;
 }
 .multiselect__input {
@@ -121,7 +126,7 @@ body.dashboard {
         }
     }
     h3 > a {
-        font-family: $font-title;
+        font-family: $font-primary;
         text-transform: uppercase;
         font-weight: 900;
         font-size: 1.6rem;
@@ -143,7 +148,7 @@ body.dashboard {
     h2 {
         font-size: 1.8rem;
         color: $color-text-gray;
-        font-family: $font-title;
+        font-family: $font-primary;
         font-weight: 900;
     }
 }
@@ -186,7 +191,7 @@ body.dashboard {
 }
 
 
-.preloader-wrapper { display: block; text-align: center; margin: 0 auto; }
+.preloader-wrapper { display: block; text-align: center; margin: 20px auto; }
 
 .is-right {
     margin-left: 30px;
@@ -199,7 +204,7 @@ body.dashboard {
 
 .dashboard__card {
     h2 a {
-        font-family: $font-title;
+        font-family: $font-primary;
         font-weight: 600;
         font-size: 1.6rem;
     }

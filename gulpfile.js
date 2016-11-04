@@ -22,6 +22,5 @@ elixir(mix => {
 
     mix.webpack('app.js');
     mix.webpack('home.js');
-    mix.webpack('profile.js');
     mix.webpack('dashboard.js');
 });

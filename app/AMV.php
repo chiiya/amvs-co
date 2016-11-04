@@ -34,14 +34,6 @@ class AMV extends Model
         return parent::create($attributes);
     }
 
-    /**
-     * Many-To-Many Relationship: One AMV belongs to many contests.
-     * Including the Pivot-Table property 'Award'.
-     */
-    public function contests() {
-        return $this->belongsToMany('App\Contest', 'amv_contest', 'amv_id', 'contest_id')
-            ->withPivot('award as award', 'id as award_id');
-    }
 
     /**
      * Many-To-Many Relationship: One AMV belongs to many genres.
@@ -51,9 +43,17 @@ class AMV extends Model
     }
 
     /**
-     * One-To-Many Relationship: One AMV belongs to one user.
+     * One-To-Many Relationship (Inverse): One AMV belongs to one user.
      */
     public function user() {
         return $this->belongsTo('App\User');
+    }
+
+    /**
+     * One-To-Many Relationship: One AMV has many Awards.
+     */
+    public function awards()
+    {
+        return $this->hasMany('App\Award', 'amv_id');
     }
 }

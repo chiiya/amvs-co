@@ -8,40 +8,47 @@ use App\User;
 use App\AMV;
 use App\Http\Requests;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Auth;
 
+/*
+|--------------------------------------------------------------------------
+| UserController
+|--------------------------------------------------------------------------
+|
+| This User Controller handles all resource requests on users with
+| authenticated sessions. For stateless requests see the Api\UserController
+|
+*/
 class UserController extends Controller
 {
 
-    public function show($name)
+    /**
+     * Display the specified user.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Request $request, $id) 
     {
         try {
-            $user = User::where('name', $name)->firstOrFail();
-            $amvs = AMV::where('user_id', $user->id)->with('user')->get();
-            foreach ($amvs as $amv) {
-                $amv->contests->toArray();
+            $user = User::findOrFail($id);
+            // If the user is requesting his own data, make email field visible
+            if (Auth::check() && $request->user()->id == $id) {
+                return response()->json($user->makeVisible('email'), 200);
             }
-            $latest = $amvs->last();
-            return view('profile', [
-                'user' => $user,
-                'amvs' => $amvs,
-                'latest' => $latest
-            ]);
+            return response()->json($user, 200);
         } catch (ModelNotFoundException $e) {
-            return view('404');
+            return response()->json(["User could not be found."], 404);
         }
     }
-
-    public function showDashboard(Request $request) 
-    {
-        return view('dashboard', [
-            'user' => $request->user()
-        ]);
-    }
-
-    public function showProfile(Request $request) {
-        return 'Logged in as ' . $request->user()->name;
-    }
-
+    
+    /**
+     * Store a new User instance in database.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function store(Request $request)
     {
         $this->validate($request, [
@@ -54,24 +61,19 @@ class UserController extends Controller
             'email' => $request->input('email'),
             'password' => Hash::make($request->input('password'))
         ]);
+
         return response()
             ->json($user, 201)
-            ->header('Location', '/api/users/'.$user->id);
+            ->header('Location', '/users/'.$user->id);
     }
 
-    public function get(Request $request, $id)
-    {
-        try {
-            $user = User::findOrFail($id);
-            if ($request->user()->id == $id) {
-                return response()->json($user->makeVisible('email'), 200);
-            }
-            return response()->json($user, 200);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(["User could not be found."], 404);
-        }
-    }
-
+    /**
+     * Update an existing User entry.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
     public function update(Request $request, $id) 
     {
         $user = User::findOrFail($id);
@@ -116,5 +118,24 @@ class UserController extends Controller
         $user->save();
 
         return response()->json($user, 200);
+    }
+
+    /**
+     * Delete an existing user from database.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Request $request, $id)
+    {
+        $user = User::find($id);
+        if ($user->id !== $request->user()->id) {
+            return response()
+                ->json(['error' => "Unauthorized."], 401);
+        }
+
+        $user->delete();
+        return response()->json("{}", 200);
     }
 }

@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="container">
-        <img class="img-responsive center-block" src="/img/404.png">
+        <img class="img-responsive error center-block" src="/img/404.png">
         <div class="wrapper">
             <h1>Sorry, the requested page could not be found.</h1>
             <p>Maybe one of these topics could be useful:</p>
