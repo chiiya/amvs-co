@@ -1,22 +1,47 @@
 import store from './store'
+import router from './router'
 import vueSmoothScroll from 'vue-smoothscroll'
-import Overview from './components/dashboard/layouts/Overview.vue'
-import EditProfile from './components/dashboard/layouts/EditProfile.vue'
-import AMVs from './components/dashboard/layouts/AMVs.vue'
 
 Vue.use(vueSmoothScroll);
 
-const vm = new Vue({
-    store, 
-    el: '#app',
-    data: {
-        currentView: 'overview'
-    },
+router.beforeEach((to, from, next) => {
+  const navelements = document.getElementsByClassName('elem');
+  for (let i=0; i<navelements.length; i++) {
+      navelements[i].classList.remove('active');
+  }
+  let active = -1;
+  if (to.path === '/dashboard') {
+    active = 0;
+  } else if (to.path === '/dashboard/profile') {
+    active = -1;
+  } else {
+    active = 1;
+  }
+  if (active > -1) {
+    navelements[active].classList.add('active');
+  }
+  next();
+});
 
-    components: {
-        overview: Overview,
-        profile: EditProfile,
-        amvs: AMVs
+const vm = new Vue({
+    store,
+    router,
+    el: '#app',
+
+    computed: {
+        parent() {
+            return this.$store.state.parent;
+        },
+        overviewClass() {
+            return {
+                'active': this.$store.state.overviewClass
+            }
+        },
+        amvClass() {
+            return {
+                'active': this.$store.state.amvClass
+            }
+        }
     },
 
     mounted: function () {
@@ -24,24 +49,12 @@ const vm = new Vue({
     },
 
     methods: {
-        display(view, event) {
-            this.currentView = view;
-            const navelements = document.getElementsByClassName('elem');
-            for (let i=0; i<navelements.length; i++) {
-                    navelements[i].classList.remove('active');
-                }
-            if (event) {
-                const target = event.currentTarget;
-                target.classList.add('active');
-            }
-        },
-
         /**
          * Load user and AMV data and store it in Vuex
          */
         loadData() {
             const id = document.querySelector("meta[name='user']").getAttribute('id');
-            this.$store.dispatch('FETCH_USER', { id });
+            this.$store.dispatch('FETCH_USER');
             this.$store.dispatch('FETCH_AMVS', { id });
         }
     }

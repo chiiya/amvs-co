@@ -61,7 +61,7 @@ class AMVController extends Controller
     public function show($id) 
     {
         try {
-            $amv = AMV::find($id)->with('user', 'genres', 'awards.contest')->firstOrFail();
+            $amv = AMV::where('id', $id)->with('user', 'genres', 'awards.contest')->firstOrFail();
             return response()->json($amv, 200);
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'AMV could not be found'], 404);
@@ -165,7 +165,7 @@ class AMVController extends Controller
         ]);
 
         // Create a new AMV model with the input data that doesn't need to be further processed
-        $amv = AMV::find($id);
+        $amv = AMV::where('id', $id)->first();
         
         if ($amv->user_id !== $request->user()->id) {
             return response()

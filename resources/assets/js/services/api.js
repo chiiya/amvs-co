@@ -1,11 +1,22 @@
 export default {
     /**
      * Resource: User
-     * GET
+     * GET, PUT
      */
 
-    getUser(id) {
-        return Vue.http.get(`/api/users/${id}`)
+    getUser() {
+        return Vue.http.get('/api/user')
+            .then((response) => Promise.resolve(response.body))
+            .catch((error) => Promise.reject(error));
+    },
+
+    updateUser(id, data) {
+        return Vue.http.post(`/api/users/${id}`, data, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Accept': 'application/json'
+                }
+            })
             .then((response) => Promise.resolve(response.body))
             .catch((error) => Promise.reject(error));
     },
@@ -17,6 +28,12 @@ export default {
 
     getAMVs(user) {
         return Vue.http.get(`/api/amvs?user=${user}`)
+            .then((response) => Promise.resolve(response.body))
+            .catch((error) => Promise.reject(error));
+    },
+
+    getAMV(id) {
+        return Vue.http.get(`/api/amvs/${id}`)
             .then((response) => Promise.resolve(response.body))
             .catch((error) => Promise.reject(error));
     },

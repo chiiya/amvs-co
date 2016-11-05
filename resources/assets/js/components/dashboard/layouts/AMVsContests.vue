@@ -1,13 +1,13 @@
 <template>
     <section class="dashboard__form is-right">
         <h3>Edit AMV Awards: {{ updatedAMV.title }} </h3>
-        <div class="row">
+        <loading></loading>
+        <div v-show="!loading" class="row">
             <div class="col-xs-12">
                 <transition-group name="contest-list" tag="div" mode="out-in">
                     <contest 
                         v-for="award in updatedAMV.awards" 
                         :award="award"
-                        :amvid="amvId" 
                         :key="award"
                         :remove="remove"
                         :notify-change="notifyChange"
@@ -27,12 +27,12 @@
                             @click="submit">
                             {{ saveButtonStatus }}
                         </button>
-                        <button id="cancel" @click="display('index')" 
+                        <button id="cancel" @click="goBack" 
                             class="button button--square button--transparent button--primary">
                             {{ cancelButtonStatus }} </button>
                     </div>
                 </div>
-                <div v-if="submitErrors.length > 0" class="row">
+                <div v-if="showErrors" class="row">
                     <div class="col-xs-12">
                         <p v-for="error in submitErrors" class="error">
                             {{ error }}
@@ -49,6 +49,7 @@
 <script>
     import ContestSelect from '../modules/ContestSelect.vue';
     import NewContestSelect from '../modules/NewContestSelect.vue';
+    import LoadingSpinner from '../modules/LoadingSpinner.vue'
 
     export default {
         data() {
@@ -61,11 +62,10 @@
                 saveButtonStatus: 'Save',
                 cancelButtonStatus: 'Cancel',
                 submitErrors: [],
-                successCount: 0
+                successCount: 0,
+                loading: false
             }
         },
-
-        props: ['display', 'amvId'],
 
         computed: {
             /**
@@ -82,26 +82,41 @@
             },
             contests() {
                 return this.$store.state.contests;
+            },
+            loading () {
+                return this.$store.state.loading;
+            },
+            amv() {
+                return this.$store.state.amvs[this.$route.params.id];
+            },
+            showErrors: function() {
+                return this.submitErrors.length > 0 && this.saveButtonStatus === 'Failed';
             }
+
         },
 
         components: {
             contest: ContestSelect,
-            newcontest: NewContestSelect
+            newcontest: NewContestSelect,
+            loading: LoadingSpinner
+        },
+
+        beforeMount: function() {
+            this.$store.commit('SET_PARENT', {
+                title: 'AMVs',
+                path: '/dashboard/amvs'
+            });
         },
 
         mounted: function () {
             if (!this.contests.length > 0) this.loadContests();
-            this.updatedAMV = JSON.parse(JSON.stringify(this.getAMV(this.amvId)));
+            this.$store.dispatch('FETCH_AMV', this.$route.params.id)
+                .then((response) => {
+                    this.updatedAMV = JSON.parse(JSON.stringify(response));
+                });
         },
 
         methods: {
-            /**
-            * Grab an AMV from Vuex by its ID.
-            */
-            getAMV(id) {
-                return this.$store.state.amvs.find(x => x.id === id);
-            },
             /**
             * Loads a list of all available contests.
             */
@@ -114,7 +129,7 @@
             add(contest) {
                 const award = {
                     award: '',
-                    amv_id: this.amvId,
+                    amv_id: this.updatedAMV.id,
                     contest_id: contest.id,
                     contest: contest
                 }
@@ -137,6 +152,7 @@
             * Performs PUT request and updates button status accordingly.
             */
             submit() {
+                this.submitErrors = [];
                 this.saveButtonDisabled = true;
                 this.saveButtonStatus = 'Saving...';
                 if (!this.validate()) {
@@ -146,7 +162,7 @@
                 } 
                 let processed = 0;
                 const max = this.updatedAMV.awards.length;
-                const oldAMV = this.getAMV(this.amvId);
+                const oldAMV = this.amv;
                 for (let i=0; i<max; i++) {
                     let current = this.updatedAMV.awards[i];
                     if (current.hasOwnProperty('id')) {
@@ -224,6 +240,9 @@
                 } else {
                     this.submitErrors.push(error.status + ": Server Error. Please try again later.");
                 }
+            },
+            goBack() {
+                this.$router.push('/dashboard/amvs');
             }
         },
     }

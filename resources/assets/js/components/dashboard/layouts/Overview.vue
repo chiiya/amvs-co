@@ -1,10 +1,7 @@
 <template>
-    <div>
-        <header class="dashboard__title valign-wrapper">
-            <h2 class="valign is-right">Dashboard</h2>
-        </header>
-        <p class="is-right" v-show="!loading">Hello {{ name }}. Nothing new! Start following users to receive updates on new AMVs.</p>
-        <loading class="is-right"></loading>
+    <div class="is-right dashboard__overview">
+        <p v-show="!loading">Hello {{ name }}. Nothing new! Start following users to receive updates on new AMVs.</p>
+        <loading></loading>
     </div>
 </template>
 
@@ -20,6 +17,19 @@
                 return this.$store.state.loading;
             }
         },
+
+        beforeMount: function() {
+            this.$store.commit('SET_PARENT', {
+                title: 'Overview',
+                path: '/dashboard'
+            });
+            const navelements = document.getElementsByClassName('elem');
+            for (let i=0; i<navelements.length; i++) {
+                navelements[i].classList.remove('active');
+            }
+            navelements[0].classList.add('active');
+        },
+
         components: {
             loading: LoadingSpinner
         }

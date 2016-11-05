@@ -33,6 +33,9 @@ Route::get('/user/{name}/{amv}', 'PagesController@showAMV');
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/dashboard', 'PagesController@showDashboard')->name('dashboard');
+    Route::get('/dashboard/{all}', 'PagesController@showDashboard')
+        ->where(['all' => '.*'])
+        ->name('dashboard');
 });
 
 
@@ -47,6 +50,7 @@ Route::group(['prefix' => 'api'], function () {
     Route::get('/users/{id}', 'UserController@show');
     Route::post('/users', 'UserController@store');
     Route::group(['middleware' => 'auth'], function () {
+        Route::get('/user', 'UserController@auth');
         Route::put('/users/{id}', 'UserController@update');
         Route::delete('/users/{id}', 'UserController@destroy');
     });

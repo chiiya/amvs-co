@@ -62,13 +62,6 @@
             */
             notifyChange: {
                 type: Function
-            },
-            /**
-            * ID of the AMV for the current contest. Necessary for delete-URL.
-            * @type {Function}
-            */
-            amvid: {
-                type: Number
             }
         },
 

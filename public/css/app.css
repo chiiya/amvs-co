@@ -9,10 +9,15 @@
  */
 
 .animated {
-  -webkit-animation-duration: 1s;
-  animation-duration: 1s;
+  -webkit-animation-duration: 0.3s;
+  animation-duration: 0.3s;
   -webkit-animation-fill-mode: both;
   animation-fill-mode: both;
+}
+
+.animated.fadeOut {
+  -webkit-animation-duration: 0.3s;
+  animation-duration: 0.3s;
 }
 
 .animated.infinite {
@@ -6036,11 +6041,6 @@ body.dashboard {
     color: #333545;
     font-size: 1.6rem;
     display: inline-block; }
-  .dashboard__content header + p {
-    font-family: "Lato", sans-serif;
-    font-weight: 300;
-    color: #888888;
-    margin-top: 1em; }
   .dashboard__content section {
     margin-bottom: 5%; }
     .dashboard__content section .row {
@@ -6051,6 +6051,12 @@ body.dashboard {
 img.preview {
   max-height: 278px;
   max-width: 100%; }
+
+.dashboard__overview p:first-of-type {
+  font-family: "Lato", sans-serif;
+  font-weight: 300;
+  color: #888888;
+  margin-top: 1em; }
 
 .multiselect__tags {
   background: transparent !important;

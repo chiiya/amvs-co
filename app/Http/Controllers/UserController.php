@@ -42,6 +42,18 @@ class UserController extends Controller
             return response()->json(["User could not be found."], 404);
         }
     }
+
+    /**
+     * Get the currently authenticated user.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function auth(Request $request) 
+    {   
+        $user = $request->user();
+        return response()->json($user->makeVisible('email'), 200);
+    }
     
     /**
      * Store a new User instance in database.
@@ -76,14 +88,13 @@ class UserController extends Controller
      */
     public function update(Request $request, $id) 
     {
-        $user = User::findOrFail($id);
+        $user = User::where('id', $id)->firstOrFail();
 
         // Check if user is authorized to update the requested user.
         if ($request->user()->id != $id) {
             return response()
                 ->json(['error' => "Unauthorized."], 401);
         }
-
         // If a _new_ email has been provided, fully validate it.
         if($request->email !== $user->email) {
             $this->validate($request, [

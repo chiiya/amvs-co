@@ -1,7 +1,8 @@
 <template>
     <section class="dashboard__form is-right">
-        <h3>Edit AMV: {{ updatedAMV.title }}</h3>
-        <div class="row">
+        <loading></loading>
+        <h3 v-show="!loading">Edit AMV: {{ updatedAMV.title }}</h3>
+        <div class="row" v-show="!loading">
             <div class="col-xs-12">
                 <div class="row">
                     <div class="col-xs-12 col-sm-6">
@@ -93,7 +94,7 @@
                             v-bind:class="saveButtonClasses"
                             @click="submit">
                             {{ saveButtonStatus }}</button>
-                        <button id="cancel" @click="display('index')" 
+                        <button id="cancel" @click="goBack" 
                             class="button button--square button--transparent button--primary">
                             {{ cancelButtonStatus }}</button>
                     </div>
@@ -114,6 +115,7 @@
 <script>
     import Multiselect from 'vue-multiselect/lib/Multiselect.vue';
     import { matchYoutubeUrl, matchVimeoUrl, matchDriveUrl } from '../../../util/functions';
+    import LoadingSpinner from '../modules/LoadingSpinner.vue'
 
     export default {
         data() {
@@ -140,8 +142,6 @@
             }
         },
 
-        props: ['display', 'amvId'],
-
         computed: {
             /**
             * Possible Save button classes, depending on the value of saveButtonStatus
@@ -157,16 +157,33 @@
             },
             genres() {
                 return this.$store.state.genres;
-            }            
+            },
+            amv() {
+                return this.$store.state.amvs[this.$route.params.id];
+            },
+            loading() {
+                return this.$store.state.loading;
+            }      
         },
 
         components: {
-            Multiselect
+            Multiselect,
+            loading: LoadingSpinner
+        },
+
+        beforeMount: function() {
+            this.$store.commit('SET_PARENT', {
+                title: 'AMVs',
+                path: '/dashboard/amvs'
+            });
         },
 
         mounted: function () {
-            this.updatedAMV = JSON.parse(JSON.stringify(this.getAMV(this.amvId)));
-            this.loadGenres();
+            this.$store.dispatch('FETCH_AMV', this.$route.params.id)
+                .then((response) => {
+                    this.updatedAMV = JSON.parse(JSON.stringify(response));
+                });
+            if (!this.genres.length > 0) this.loadGenres();
             this.baywatch(['updatedAMV.title', 'updatedAMV.music', 'updatedAMV.animes', 'updatedAMV.video',
                 'updatedAMV.download', 'updatedAMV.genres', 'updatedAMV.published'
                 ], this.notifyChange.bind(this));
@@ -174,16 +191,10 @@
                 const textarea = document.getElementById('description');
                 textarea.style.height = "";
                 textarea.style.height = textarea.scrollHeight + "px";
-            });
+            });  
         },
 
         methods: {
-            /**
-            * Grab an AMV from Vuex by its ID.
-            */
-            getAMV(id) {
-                return this.$store.state.amvs.find(x => x.id === id);
-            },
             /**
             * Load a list of available genres to use for the multiselect
             */
@@ -268,11 +279,14 @@
 
                 // Laravel bug: multipart/form-data needs to be POST. Specify custom method PUT.
                 formData.append('_method', 'PUT')
+
                 this.$store.dispatch('PATCH_AMV', {
                         id: this.updatedAMV.id,
                         data: formData
                 })
-                    .then(() => {
+                    .then((response) => {
+                        this.updatedAMV.poster = response.poster;
+                        this.updatedAMV.bg = response.bg;
                         this.$store.commit('UPDATE_AMV', this.updatedAMV);
                         this.saveButtonStatus = 'Saved';
                         this.cancelButtonStatus = 'Back';
@@ -285,7 +299,8 @@
                             }
                         } else {
                             this.debug = error.body;
-                            this.submitErrors.push("Server Error. Please try again later.");
+                            alert(error);
+                            this.submitErrors.push(error.status + ": Server Error. Please try again later.");
                         }
                         
                     });
@@ -345,7 +360,7 @@
                         valid = false;
                     }
                     if (posterFiles[0].size/1024 > 500) {
-                        this.errors.poster("Image must be smaller than 500KB.");
+                        this.errors.poster = "Image must be smaller than 500KB.";
                         valid = false;
                     }
                 }
@@ -356,7 +371,7 @@
                         valid = false;
                     }
                     if (bgFiles.size/1024 > 500) {
-                        this.errors.bg("Image must be smaller than 500KB.");
+                        this.errors.bg = "Image must be smaller than 500KB.";
                         valid = false;
                     }
                 }
@@ -384,6 +399,9 @@
                     this.saveButtonStatus = 'Save';
                     this.cancelButtonStatus = 'Cancel';
                 }
+            },
+            goBack() {
+                this.$router.push('/dashboard/amvs');
             }
         },
 

@@ -11,16 +11,18 @@
                     <p>{{ genres }}</p>
                 </div>
                 <div class="card-action">
-                    <a class="button button--square button--info button--transparent"
-                        @click="display('edit', amv.id)">
+                    <router-link
+                        :to="'/dashboard/amvs/' + amv.id" 
+                        class="button button--square button--info button--transparent">
                         Edit
                         <i class="material-icons high">edit</i>
-                    </a>
-                    <a class="button button--square button--info button--transparent"
-                        @click="display('contests', amv.id)">
+                    </router-link>
+                    <router-link
+                        :to="'/dashboard/amvs/' + amv.id + '/contests'"
+                        class="button button--square button--info button--transparent">
                         Contests
                         <i class="material-icons high">star</i>
-                    </a>
+                    </router-link>
                     <a class="button button--square button--danger button--transparent"
                         @click="deleteAmv" v-bind:disabled="deleteButtonDisabled" v-bind:class="deleteButtonClasses">
                         {{ deleteButtonStatus }}
@@ -50,7 +52,7 @@
             }
         },
 
-        props: ['amv', 'display'],
+        props: ['amv'],
 
         computed: {
             /**
@@ -86,7 +88,7 @@
                 this.deleteButtonStatus = 'Deleting...';
                 this.$store.dispatch('DESTROY_AMV', this.amv.id)
                     .then((response) => {
-                        this.deleteButtonStatus = 'Saved';
+                        this.deleteButtonStatus = 'Deleted';
                     })
                     .catch((error) => {
                         this.deleteButtonStatus = 'Failed';

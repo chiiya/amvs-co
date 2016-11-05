@@ -19,7 +19,7 @@
             </li>
             <li>
                 <h3>Website</h3>
-                @if ($user->website == null)
+                @if ($user->website !== null)
                 <p><a href="{{ $user->website }}">Visit Website</a></p>
                 @else
                 <p>-</p>

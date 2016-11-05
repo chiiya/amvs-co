@@ -65,7 +65,7 @@
                 </div>
                 <div class="col-md-6">
                     <h2>Description</h2>
-                    <p>{{ $amv->description }}</p>
+                    <p>{!! nl2br(e($amv->description)) !!}</p>
                 </div>
             </div>
         </div>

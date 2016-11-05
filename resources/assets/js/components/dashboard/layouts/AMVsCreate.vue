@@ -91,7 +91,7 @@
                             v-bind:class="saveButtonClasses"
                             @click="submit">
                             {{ saveButtonStatus }}</button>
-                        <button id="cancel" @click="display('index')" 
+                        <button id="cancel" @click="goBack" 
                             class="button button--square button--transparent button--primary">
                             {{ cancelButtonStatus }}</button>
                     </div>
@@ -146,8 +146,6 @@
             }
         },
 
-        props: ['display'],
-
         computed: {
             /**
             * Possible Save button classes, depending on the value of saveButtonStatus
@@ -168,6 +166,13 @@
 
         components: {
             Multiselect
+        },
+
+        beforeMount: function() {
+            this.$store.commit('SET_PARENT', {
+                title: 'AMVs',
+                path: '/dashboard/amvs'
+            });
         },
 
         mounted: function () {
@@ -337,7 +342,7 @@
                         valid = false;
                     }
                     if (posterFiles[0].size/1024 > 500) {
-                        this.errors.poster("Image must be smaller than 500KB.");
+                        this.errors.poster = "Image must be smaller than 500KB.";
                         valid = false;
                     }
                 }
@@ -348,7 +353,7 @@
                         valid = false;
                     }
                     if (bgFiles.size/1024 > 500) {
-                        this.errors.bg("Image must be smaller than 500KB.");
+                        this.errors.bg = "Image must be smaller than 500KB.";
                         valid = false;
                     }
                 }
@@ -376,6 +381,9 @@
                     this.saveButtonStatus = 'Save';
                     this.cancelButtonStatus = 'Cancel';
                 }
+            },
+            goBack() {
+                this.$router.go(-1);
             }
         }
         

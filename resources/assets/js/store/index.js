@@ -11,7 +11,7 @@ const store = new Vuex.Store({
         /**
          * List of all AMVs by the current user
          */
-        amvs: [],
+        amvs: {},
         /**
          * List of all available AMV genres
          */
@@ -28,19 +28,31 @@ const store = new Vuex.Store({
          * Currently fetching data from the API?
          */
         loading: false,
+        /**
+         * Currently displayed parent component (for breadcrumbs)
+         */
+        parent: {
+            title: 'Overview',
+            path: ''
+        },
         failure: ''
     },
 
     actions: {
         /**
-         * Fetch a user by its ID from the API. Once done, store in Vuex
+         * Fetch a user. First check if the user is already stored in Vuex, if that is the case
+         * the simply return it. Otherwise make a call to the API and then store in Vuex.
          */
-        FETCH_USER: ({commit, state}, {id}) => {
-            commit('SET_LOADING', { val: true });
-            return api.getUser(id)
+        FETCH_USER: ({commit, state}) => {
+            const isEmpty = Object.keys(state.user).length === 0
+            if (isEmpty) commit('SET_LOADING', { val: true });
+            return !isEmpty
+                ? Promise.resolve(state.user)
+                : api.getUser()
                 .then((response) => {
                     commit('SET_LOADING', { val: false });
                     commit('SET_USER', response);
+                    return Promise.resolve(response);
                 })
                 .catch((error) => {
                     commit('SET_LOADING', { val: false });
@@ -61,6 +73,21 @@ const store = new Vuex.Store({
                     commit('SET_LOADING', { val: false });
                     commit('FAILURE', error)
                 });
+        },
+
+        FETCH_AMV: ({commit, state}, id) => {
+            if (!state.amvs[id]) commit('SET_LOADING', { val: true });
+            return state.amvs[id]
+                ? Promise.resolve(state.amvs[id])
+                : api.getAMV(id)
+                    .then((response) => {
+                        commit('SET_LOADING', { val: false });
+                        return Promise.resolve(response);
+                    })
+                    .catch((error) => {
+                        commit('SET_LOADING', { val: false });
+                        commit('FAILURE', error)
+                    });
         },
         /**
          * Fetch all AMV genres from the API. Once done, store in Vuex
@@ -92,6 +119,12 @@ const store = new Vuex.Store({
                     commit('SET_LOADING', { val: false });
                     commit('FAILURE', error)
                 });
+        },
+
+        PATCH_USER: ({commit}, payload) => {
+            return api.updateUser(payload.id, payload.data)
+                .then((response) => Promise.resolve(response))
+                .catch((error) => Promise.reject(error));
         },
 
         /**
@@ -171,12 +204,12 @@ const store = new Vuex.Store({
         },
 
         SET_AMVS: (state, amvs) => {
-            for (let i=0; i<amvs.length; i++) {
-                for (let key in amvs[i]) {
-                    if (amvs[i][key] === 'null') amvs[i][key] = '';
+            amvs.forEach(amv => {
+                for (let key in amv) {
+                    if (amv[key] === 'null') amv[key] = '';
                 }
-            }
-            state.amvs = amvs;
+                Vue.set(state.amvs, amv.id, amv);
+            });
         },
 
         SET_GENRES: (state, genres) => {
@@ -197,51 +230,43 @@ const store = new Vuex.Store({
             for (let key in amv) {
                 if (amv[key] === 'null') amv[key] = '';
             }
-            state.amvs.push(amv);
+            Vue.set(state.amvs, amv.id, amv);
         },
 
         UPDATE_AMV: (state, amv) => {
-            const index = state.amvs.findIndex(x => x.id === amv.id);
-            state.amvs[index] = amv;
+            state.amvs[amv.id] = amv;
         },
 
         DELETE_AMV: (state, id) => {
-            const index = state.amvs.findIndex(x => x.id === id);
-            if (index > -1) {
-                state.amvs.splice(index, 1);
-            }
+            Vue.delete(state.amvs, id);
         },
 
         ADD_AWARD: (state, award) => {
-            const amv = state.amvs.find(x => x.id === award.amv_id);
-            if (!amv) return;
-            amv.awards.push(award);
+            state.amvs[award.amv_id].awards.push(award);
         },
 
         UPDATE_AWARD: (state, award) => {
-            const amv = state.amvs.find(x => x.id === award.amv_id);
-            if (amv && amv.awards && amv.awards.length > 0) {
-                const index = amv.awards.findIndex(x => x.id === award.id);
-                if (index > -1) {
-                    amv.awards[index] = award;
-                }
+            const index = state.amvs[award.amv_id].awards.findIndex(x => x.id === award.id);
+            if (index > -1) {
+                state.amvs[award.amv_id].awards[index] = award;
             }
         },
 
         DELETE_AWARD: (state, award) => {
-            const amv = state.amvs.find(x => x.id === award.amv_id);
-            if (amv && amv.awards && amv.awards.length > 0) {
-                const index = amv.awards.findIndex(x => x.id === award.id);
-                if (index > -1) {
-                    amv.awards.splice(index, 1);
-                }
+            const index = state.amvs[award.amv_id].awards.findIndex(x => x.id === award.id);
+            if (index > -1) {
+                state.amvs[award.amv_id].awards.splice(index, 1);
             }
+        },
+
+        SET_PARENT: (state, parent) => {
+            state.parent = parent;
         }
     },
 
     getters: {
-        avatar: state => {
-            return state.user.avatar || '/img/avatars/default.jpg';
+        amvs: state => {
+            return Object.keys(state.amvs).map(key => state.amvs[key]);
         }
     }
 })

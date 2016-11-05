@@ -21,25 +21,27 @@
                 <img class="img--circle avatar" src='{{ $user->avatar }}'/>
                 <div>
                     <h3><a href="/user/{{ $user->name }}">{{ $user->name }}</a></h3>
-                    <p><a href="#" v-on:click="display('profile')">Edit Profile</a></p>
+                    <p><router-link to="/dashboard/profile">Edit Profile</router-link></p>
                 </div>
             </li>
-            <li><a class="elem active" href="#" v-on:click="display('overview', $event)"><i class="material-icons">home</i> Dashboard</a></li>
-            <li><a class="elem" href="#" v-on:click="display('amvs', $event)"><i class="material-icons">movie</i> My AMVS</a></li>
+            <li><router-link class="elem" to="/dashboard" v-on:click="setNav()"><i class="material-icons">home</i> Dashboard</router-link></li>
+            <li><router-link class="elem" to="/dashboard/amvs" v-on:click="setNav()"><i class="material-icons">movie</i> My AMVS</router-link></li>
         </ul>
     </nav>
     <main class="dashboard__content">
-        <transition 
-            name="fade" 
-            enter-active-class="animated fadeIn" 
-            leave-activeclass="animated fadeOut" 
-            mode="out-in"
-        >
-            <component 
-                :is="currentView"
-                :display="display">
-            </component>
-        </transition>
+        <div>
+            <header class="dashboard__title valign-wrapper">
+                <router-link to="/dashboard" class="breadcrumb">Dashboard</router-link>
+                <router-link :to="parent.path" class="breadcrumb" v-cloak>@{{ parent.title }}</router-link>
+            </header>
+            <transition 
+                name="fade" 
+                enter-active-class="animated fadeIn" 
+                leave-active-class="animated fadeOut" 
+                mode="out-in">
+                <router-view></router-view>
+            </transition>
+        </div>
     </main>
   </div>
 @endsection

@@ -1,10 +1,7 @@
 <template>
-    <div>
-    <header class="dashboard__title valign-wrapper">
-            <a href="#" class="breadcrumb">Edit Profile</a>
-    </header>
     <section class="dashboard__form form--profile is-right">
-        <div class="row">
+        <loading></loading>
+        <div class="row" v-show="!loading">
             <div class="col-xs-12">
                 <h3>General Information</h3>
                 <div class="row">
@@ -61,7 +58,7 @@
                             v-bind:class="saveButtonClasses"
                             @click="submit">
                             {{ saveButtonStatus }}</button>
-                        <button id="cancel" @click="display('overview')" 
+                        <button id="cancel" @click="goBack" 
                             class="button button--square button--transparent button--primary">
                             {{ cancelButtonStatus }}</button>
                     </div>
@@ -77,10 +74,10 @@
             </div>
         </div>
     </section>
-    </div>
 </template>
 
 <script>
+    import LoadingSpinner from '../modules/LoadingSpinner.vue'
 
     export default {
         data() {
@@ -102,8 +99,6 @@
             }
         },
 
-        props: ['display'],
-
         computed: {
             /**
             * Get the avatar URL. In case the user doesn't have an avatar, show default one.
@@ -111,6 +106,9 @@
             */
             avatar() {
                 return this.userObject.avatar || '/img/avatars/default.jpg'
+            },
+            loading() {
+                return this.$store.state.loading;
             },
             /**
             * Possible Save button classes, depending on the value of saveButtonStatus
@@ -129,14 +127,30 @@
             }
         },
 
+        components: {
+            loading: LoadingSpinner
+        },
+
         mounted: function() {
-            this.userObject = JSON.parse(JSON.stringify(this.$store.state.user));
+            const navelements = document.getElementsByClassName('elem');
+            for (let i=0; i<navelements.length; i++) {
+                navelements[i].classList.remove('active');
+            }
+            this.$store.commit('SET_PARENT', {
+                title: 'Edit Profile',
+                path: '/dashboard/profile'
+            });
+            this.$store.dispatch('FETCH_USER')
+                .then((response) => {
+                    this.userObject = JSON.parse(JSON.stringify(response));
+                });
             this.baywatch(['userObject.location', 'userObject.studio', 'userObject.website', 
                 'userObject.email', 'password'], this.notifyChange.bind(this));
         },
 
         methods: {
             submit: function() {
+                this.submitErrors = [];
                 this.saveButtonDisabled = true;
                 this.saveButtonStatus = 'Saving...';
 
@@ -177,28 +191,31 @@
 
                 // Laravel bug: multipart/form-data needs to be POST. Specify custom method PUT.
                 formData.append('_method', 'PUT');
-                this.$http.post(`/api/users/${this.userObject.id}`, formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                        'Accept': 'application/json'
-                    }
-                }).then((response) => {
-                    this.userObject.avatar = response.body.avatar;
+
+                this.$store.dispatch('PATCH_USER', {
+                        id: this.userObject.id,
+                        data: formData
+                })
+                .then((response) => {
+                    console.log(response);
+                    this.userObject.avatar = response.avatar;
                     this.$store.commit('SET_USER', this.userObject);
-                    this.updateAvatar(response.body.avatar);
+                    this.updateAvatar(response.avatar);
                     this.saveButtonStatus = 'Saved';
                     this.cancelButtonStatus = 'Back';
-                }, (error) => {
+                })
+                .catch((error) => {
                     this.saveButtonStatus = 'Failed';
                     if (typeof error.body === 'object') {
-                            for (let key in error.body) {
-                                this.submitErrors.push(error.body[key][0]);
-                            }
-                        } else {
-                            this.megaError = error.body;
-                            this.submitErrors.push(error.status + ": Server Error. Please try again later.");
+                        for (let key in error.body) {
+                            this.submitErrors.push(error.body[key][0]);
                         }
+                    } else {
+                        this.megaError = error.body;
+                        this.submitErrors.push(error.status + ": Server Error. Please try again later.");
+                    }
                 });
+
             },
             validateImage: function(file) {
                 if (!(/\.(png|jpeg|jpg)$/i).test(file.name)) {
@@ -239,8 +256,8 @@
                 }
             },
             pushError: function(error) {
-                if (this.validationErrors.indexOf(error) === -1) {
-                    this.validationErrors.push(error);
+                if (this.submitErrors.indexOf(error) === -1) {
+                    this.submitErrors.push(error);
                 }
             },
             updateAvatar: function(path) {
@@ -248,6 +265,9 @@
                 for (let i=0; i<avatars.length; i++) {
                     avatars[i].src = path;
                 }
+            },
+            goBack() {
+                this.$router.go(-1);
             }
         }
     }
