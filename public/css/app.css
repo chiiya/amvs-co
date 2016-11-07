@@ -5813,9 +5813,12 @@ img.preview {
   margin-top: -5px; }
 
 .dashboard__card h2 a {
+  color: #333545;
   font-family: "Lato", sans-serif;
   font-weight: 600;
   font-size: 1.6rem; }
+  .dashboard__card h2 a:hover {
+    color: #565c89; }
 
 .dashboard__card p {
   font-size: 1.6rem;
@@ -6279,6 +6282,10 @@ body.profile .poster-placeholder, body.login .poster-placeholder {
 body.dashboard .nav--main {
   position: fixed;
   z-index: 999; }
+
+@media only screen and (min-width: 1500px) {
+  body.dashboard .container.nav-wrapper {
+    width: 90%; } }
 
 @media only screen and (max-width: 992px) {
   body.dashboard .nav--main ul {

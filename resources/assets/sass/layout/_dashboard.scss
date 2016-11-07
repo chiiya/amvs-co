@@ -210,9 +210,13 @@ img.preview {
 
 .dashboard__card {
     h2 a {
+        color: $color-primary;
         font-family: $font-primary;
         font-weight: 600;
         font-size: 1.6rem;
+        &:hover {
+            color: $color-secondary;
+        } 
     }
     p {
         font-size: 1.6rem;

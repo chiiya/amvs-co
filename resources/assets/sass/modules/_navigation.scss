@@ -54,6 +54,14 @@ body.dashboard {
     }
 }
 
+@media only screen and (min-width : 1500px) {
+    body.dashboard {
+        .container.nav-wrapper {
+            width: 90%;
+        }
+    }
+}
+
 @media #{$medium-and-down} {
     body.dashboard .nav--main ul {
         padding-left: 10px;
