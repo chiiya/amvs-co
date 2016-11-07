@@ -23,10 +23,8 @@ Route::get('/', function() {
     else return redirect()->route('login');
 })->name('index');
 
-Route::get('/login', function() {
-    if (Auth::check()) return redirect()->route('dashboard');
-    else return view('login');
-})->name('login');
+Route::get('/login', 'PagesController@showLogin')->name('login');
+Route::get('/signup', 'PagesController@showSignup');
 
 Route::get('/user/{name}', 'PagesController@showUser');
 Route::get('/user/{name}/{amv}', 'PagesController@showAMV');
@@ -34,8 +32,7 @@ Route::get('/user/{name}/{amv}', 'PagesController@showAMV');
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/dashboard', 'PagesController@showDashboard')->name('dashboard');
     Route::get('/dashboard/{all}', 'PagesController@showDashboard')
-        ->where(['all' => '.*'])
-        ->name('dashboard');
+        ->where(['all' => '.*']);
 });
 
 
@@ -92,7 +89,6 @@ Route::post('login', 'Auth\LoginController@login');
 Route::post('logout', 'Auth\LoginController@logout');
 
 // Registration Routes...
-Route::get('register', 'Auth\RegisterController@showRegistrationForm');
 Route::post('register', 'Auth\RegisterController@register');
 
 // Password Reset Routes...

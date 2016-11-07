@@ -26,7 +26,7 @@
             return {
                 /**
                 * Current selected option from multiselect.
-                * @type {Object} gets assigned the entire award object
+                * @type {Object: gets assigned the entire award object}
                 */
                 selected: null
             }

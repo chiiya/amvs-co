@@ -30,7 +30,7 @@
                                 <i class="material-icons">cloud_upload</i>
                                 Upload Avatar
                             </label>
-                            <input type="file" id="avatar" @change="showImage($event)">
+                            <input type="file" id="avatar" @change="showImage">
                         </div>
                     </div>
                 </div>
@@ -68,7 +68,6 @@
                         <p v-for="error in submitErrors" class="error">
                             {{ error }}
                         </p>
-                        <pre>{{ megaError }}</pre>
                     </div>
                 </div>
             </div>
@@ -78,6 +77,7 @@
 
 <script>
     import LoadingSpinner from '../modules/LoadingSpinner.vue'
+    import { setNav } from '../../../util/functions';
 
     export default {
         data() {
@@ -94,23 +94,28 @@
                 cancelButtonStatus: 'Cancel',
                 submitErrors: [],
                 password: '',
-                confirmPassword: '',
-                megaError: ''
+                confirmPassword: ''
             }
         },
 
         computed: {
-            /**
+           /**
             * Get the avatar URL. In case the user doesn't have an avatar, show default one.
             * @returns {String}
             */
             avatar() {
                 return this.userObject.avatar || '/img/avatars/default.jpg'
             },
+
+            /**
+             * Current loading status (loading is true if data is being loaded asynchronously)
+             * @returns {Boolean}
+             */
             loading() {
                 return this.$store.state.loading;
             },
-            /**
+
+           /**
             * Possible Save button classes, depending on the value of saveButtonStatus
             * @returns {Object}
             */
@@ -122,6 +127,11 @@
                     'button--error': this.saveButtonStatus === 'Failed'
                 }
             },
+
+            /**
+             * Only show errors when the attempt to save just failed.
+             * @returns {Boolean}
+             */ 
             showErrors: function() {
                 return this.submitErrors.length > 0 && this.saveButtonStatus === 'Failed';
             }
@@ -132,25 +142,36 @@
         },
 
         mounted: function() {
-            const navelements = document.getElementsByClassName('elem');
-            for (let i=0; i<navelements.length; i++) {
-                navelements[i].classList.remove('active');
-            }
+            // Set Breadcrumbs
             this.$store.commit('SET_PARENT', {
                 title: 'Edit Profile',
                 path: '/dashboard/profile'
             });
+            setNav(-1);
+
+            // Fetch current user from Vuex or API
             this.$store.dispatch('FETCH_USER')
                 .then((response) => {
+                    // this.userObject = response would create a copy by reference! All changes to userObject
+                    // would cascade down to the store object as well.
+                    // JSON.parse(JSON.stringify) in order to create a new copy of the user, not by reference.
+                    // Needs to be done so that the user changes can be disregarded once he clicks 'Cancel'
                     this.userObject = JSON.parse(JSON.stringify(response));
                 });
+            
+            // Watch all input field for user input
             this.baywatch(['userObject.location', 'userObject.studio', 'userObject.website', 
                 'userObject.email', 'password'], this.notifyChange.bind(this));
         },
 
         methods: {
-            submit: function() {
+            /**
+             * Submit the form and update the user
+             */
+            submit() {
+                // Reset errors
                 this.submitErrors = [];
+
                 this.saveButtonDisabled = true;
                 this.saveButtonStatus = 'Saving...';
 
@@ -197,7 +218,6 @@
                         data: formData
                 })
                 .then((response) => {
-                    console.log(response);
                     this.userObject.avatar = response.avatar;
                     this.$store.commit('SET_USER', this.userObject);
                     this.updateAvatar(response.avatar);
@@ -211,13 +231,18 @@
                             this.submitErrors.push(error.body[key][0]);
                         }
                     } else {
-                        this.megaError = error.body;
                         this.submitErrors.push(error.status + ": Server Error. Please try again later.");
                     }
                 });
 
             },
-            validateImage: function(file) {
+
+            /**
+             * Validates the avatar image
+             * @param {Object file: avatar file submitted by user}
+             * @returns {Boolean: file is valid or not}
+             */
+            validateImage(file) {
                 if (!(/\.(png|jpeg|jpg)$/i).test(file.name)) {
                     this.pushError("Must be a valid image file (.PNG, .JPG or .JPEG allowed).");
                     return false;
@@ -228,12 +253,23 @@
                 }
                 return true;
             },
+
+            /**
+             * Watches an array of properties for changes
+             * @param {Array props: properties to be watched}
+             * @param {Function watcher: method to be executed once a change has been detected}
+             */
             baywatch: function(props, watcher) {
                 var iterator = function(prop) {
                     this.$watch(prop, watcher);
                 };
                 props.forEach(iterator, this);
             },
+
+            /**
+             * Once a change to one of the input fields has been made, reset buttons so that the user can
+             * save additional changes
+             */
             notifyChange: function() {
                 if (this.saveButtonDisabled) {
                     this.saveButtonDisabled = false;
@@ -241,7 +277,11 @@
                     this.cancelButtonStatus = 'Cancel';
                 }
             },
-            showImage: function(event) {
+
+            /**
+             * Show a preview of the avatar image submitted by the user
+             */
+            showImage() {
                 const elAvatar = document.getElementById('avatar');
                 const files = elAvatar.files;
                 let vm = this;
@@ -255,17 +295,31 @@
                     this.notifyChange();
                 }
             },
+
+            /**
+             * Push a new error onto the submitErrors array
+             * @param {String error}
+             */
             pushError: function(error) {
                 if (this.submitErrors.indexOf(error) === -1) {
                     this.submitErrors.push(error);
                 }
             },
+
+            /**
+             * Once the new avatar has been uploaded, update all instances on the current page as well
+             * @param {String path: URL of the new avatar}
+             */
             updateAvatar: function(path) {
                 const avatars = document.getElementsByClassName('avatar');
                 for (let i=0; i<avatars.length; i++) {
                     avatars[i].src = path;
                 }
             },
+
+            /**
+             * When the user clicks on 'Back'/'Cancel', return to previous page
+             */
             goBack() {
                 this.$router.go(-1);
             }

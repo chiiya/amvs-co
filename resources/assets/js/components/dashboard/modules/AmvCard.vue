@@ -8,7 +8,10 @@
                 <div class="card-content">
                     <h2><a v-bind:href="'/user/' + user.name + '/' + amv.url">{{ amv.title }}</a></h2>
                     <p>{{ amv.date }}</p>
-                    <p>{{ genres }}</p>
+                    <div class="labels">
+                    <span v-for="genre in amv.genres"><span class="label label-primary">{{ genre.name }}</span> &nbsp;</span>
+                    </div>
+                    <p>{{ animes }}</p>
                 </div>
                 <div class="card-action">
                     <router-link
@@ -56,13 +59,14 @@
 
         computed: {
             /**
-            * Concatenated genres of the AMV, separated by dash
+            * Truncate anime sources if necessary
             * @returns {String}
             */
-            genres: function() {
-                if (this.amv.genres) {
-                    return this.amv.genres.map(function(elem) { return elem.name; }).join(' - ');
-                } else return "";
+            animes() {
+                if (this.amv.animes.length > 40) {
+                    return this.amv.animes.substring(0, 40) + '...';
+                }
+                return this.amv.animes;
             },
             user() {
                 return this.$store.state.user;
@@ -71,7 +75,7 @@
             * Possible delete button classes, depending on the value of deleteButtonStatus
             * @returns {Object}
             */
-            deleteButtonClasses: function() {
+            deleteButtonClasses() {
                 return {
                     'button--loading': this.deleteButtonStatus === 'Deleting...',
                     'button--error': this.deleteButtonStatus === 'Failed'
@@ -83,7 +87,7 @@
             /**
             * Delete currently displayed AMV
             */
-            deleteAmv: function() {
+            deleteAmv() {
                 this.deleteButtonDisabled = true;
                 this.deleteButtonStatus = 'Deleting...';
                 this.$store.dispatch('DESTROY_AMV', this.amv.id)

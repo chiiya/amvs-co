@@ -15,6 +15,7 @@
 <script>
     import AmvCard from '../modules/AmvCard.vue';
     import LoadingSpinner from '../modules/LoadingSpinner.vue'
+    import { setNav } from '../../../util/functions';
 
     export default {
 
@@ -24,16 +25,30 @@
         },
 
         beforeMount: function() {
+            // Set Breadcrumbs
             this.$store.commit('SET_PARENT', {
                 title: 'AMVs',
                 path: '/dashboard/amvs'
             });
         },
 
+        mounted: function() {
+            setNav(1);
+        },
+
         computed: {
+            /**
+             * List of all amvs by this user.
+             * @returns {Array}
+             */
             amvs() {
                 return this.$store.getters.amvs;
             },
+
+            /**
+             * Current loading status (loading is true if data is being loaded asynchronously)
+             * @returns {Boolean}
+             */
             loading() {
                 return this.$store.state.loading;
             }

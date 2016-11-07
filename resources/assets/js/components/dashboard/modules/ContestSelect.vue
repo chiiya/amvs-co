@@ -70,21 +70,21 @@
             * Concatenate contest name and year. Will be shown in the disabled contest input field.
             * @returns {String} 
             */
-            name: function() {
+            name() {
                 return `${this.award.contest.name} ${this.award.contest.year}`;
             },
             /**
             * Checks if the current contest award is local or not (i.e. has not been saved to the server yet).
             * @returns {Boolean}
             */
-            isLocal: function() {
+            isLocal() {
                 return (!this.award.hasOwnProperty('id'));
             },
             /**
             * Possible delete button classes, depending on the value of deleteButtonStatus
             * @returns {Object}
             */
-            deleteButtonClasses: function() {
+            deleteButtonClasses() {
                 return {
                     'button--loading': this.deleteButtonStatus === 'Deleting...',
                     'button--error': this.deleteButtonStatus === 'Failed'

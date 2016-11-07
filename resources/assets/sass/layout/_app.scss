@@ -10,10 +10,15 @@ body {
 }
 
 .clear {
-    float: none;
-    overflow: hidden;
-    height: 1px;
-    padding-bottom: 1%;
+    background-color: $color-bg;
+    &:before,
+  &:after {
+    content: " "; // 1
+    display: table; // 2
+  }
+  &:after {
+    clear: both;
+  }
 }
 
 .img--circle {

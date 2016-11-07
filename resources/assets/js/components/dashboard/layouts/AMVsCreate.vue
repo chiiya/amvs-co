@@ -110,7 +110,7 @@
 
 <script>
     import Multiselect from 'vue-multiselect/lib/Multiselect.vue';
-    import { matchYoutubeUrl, matchVimeoUrl, matchDriveUrl } from '../../../util/functions';
+    import { matchYoutubeUrl, matchVimeoUrl, matchDriveUrl, setNav } from '../../../util/functions';
 
     export default {
         data() {
@@ -147,11 +147,11 @@
         },
 
         computed: {
-            /**
+           /**
             * Possible Save button classes, depending on the value of saveButtonStatus
             * @returns {Object}
             */
-            saveButtonClasses: function() {
+            saveButtonClasses() {
                 return {
                     'button--primary': this.saveButtonStatus === 'Save' || this.saveButtonStatus === 'Saving...',
                     'button--loading': this.saveButtonStatus === 'Saving...',
@@ -159,6 +159,11 @@
                     'button--error': this.saveButtonStatus === 'Failed'
                 }
             },
+
+            /**
+             * List of all available genres, from Vuex
+             * @returns {Array}
+             */
             genres() {
                 return this.$store.state.genres;
             }            
@@ -169,6 +174,7 @@
         },
 
         beforeMount: function() {
+            // Set Breadcrumbs
             this.$store.commit('SET_PARENT', {
                 title: 'AMVs',
                 path: '/dashboard/amvs'
@@ -176,21 +182,24 @@
         },
 
         mounted: function () {
-            this.loadGenres();
+            setNav(1);
+            // Only fetch genres from API if they aren't already stored in Vuex
+            if (!this.genres.length > 0) this.loadGenres();
+            // Watch all input fields for user input
             this.baywatch(['amvObject.title', 'amvObject.music', 'amvObject.animes', 'amvObject.video',
                 'amvObject.download', 'amvObject.genres', 'amvObject.published'
                 ], this.notifyChange.bind(this));
         },
 
         methods: {
-            /**
+           /**
             * Load a list of available genres to use for the multiselect
             */
             loadGenres() {
                 this.$store.dispatch('FETCH_GENRES');
             },
 
-            /**
+           /**
             * Automaticaly expand (or reduce) the description textarea on user input
             */
             resizeTextarea() {
@@ -199,32 +208,37 @@
                 textarea.style.height = textarea.scrollHeight + "px";
             },
 
-            /**
+           /**
             * Get the submitted filepath, and strip out the path. 'C:\Pictures\foo.png' -> 'foo.png'
-            * @params {String: poster/bg, Object}
+            * @param {String type: 'poster'/'bg'}
+            * @param {Object event: DOM node that fired the Listener}
             */
             showFile(type, event) {
                 this[type] = ' | ' + event.currentTarget.value.replace(/^.*?([^\\\/]*)$/, '$1');
                 this.notifyChange();
             },
 
-            /**
+           /**
             * Update the AMV genres with values from multiselect
-            * @params {Array: list of genre objects}
+            * @param {Array value: list of genre objects}
             */
             updateSelected(value) {
                 this.amvObject.genres = value;
             },
 
-            /**
+           /**
             * Submit the form and create new AMV entry
             */
-            submit: function() {
+            submit() {
+                // Reset errors
+                this.submitErrors = [];
                 for (let key in this.errors) {
                     this.errors[key] = '';
                 }
+
                 this.saveButtonDisabled = true;
                 this.saveButtonStatus = 'Saving...';
+
                 const formData = new FormData();
                 const posterFiles = document.getElementById('poster').files;
                 const bgFiles = document.getElementById('bg').files;
@@ -232,7 +246,9 @@
                 // Validate form
                 if (!this.validateForm(posterFiles, bgFiles)) {
                     this.saveButtonStatus = 'Failed';
-                    window.scrollTo(0, 0);
+                    $('html, body').animate({
+                        scrollTop: $('.error:visible:first').offset().top
+                    }, 1000);
                     return;
                 }
 
@@ -281,11 +297,13 @@
                     });
             },
 
-            /**
+           /**
             * Validates the input form
-            * @returns {Boolean} Form is valid or not
+            * @param {Array posterFiles: poster image submitted by user}
+            * @param {Array bgFiles: background image submitted by user}
+            * @returns {Boolean: Form is valid or not}
             */
-            validateForm: function(posterFiles, bgFiles) {
+            validateForm(posterFiles, bgFiles) {
                 let valid = true;
 
                 // Check if title is present, and then if that title has already been used in one of the user's AMVs.
@@ -293,8 +311,8 @@
                     this.errors.title = "Please specify a title for your AMV.";
                     valid = false;
                 } else {
-                    for (let i=0; i<this.$store.state.amvs.length; i++) {
-                        if (this.$store.state.amvs[i].title.indexOf(this.amvObject.title) > -1) {
+                    for (let key in this.$store.state.amvs) {
+                        if (this.$store.state.amvs[key].title.indexOf(this.amvObject.title) > -1) {
                             this.errors.title = "You already used this title for another AMV. Your title needs to be unique among your AMVs.";
                             valid = false;
                         }
@@ -311,7 +329,8 @@
                     valid = false;
                 }
                 // Match input video URL to either Youtube or Vimeo and extract video ID
-                if (this.amvObject.video != null &&  this.amvObject.video.length > 0) {
+                if (this.amvObject.video != null && this.amvObject.video !== '' & 
+                    this.amvObject.video.length > 0) {
                     const youtube = matchYoutubeUrl(this.amvObject.video);
                     const vimeo = matchVimeoUrl(this.amvObject.video);
 
@@ -327,7 +346,8 @@
                     }
                 }
                 // Match input download URL to Google Drive and extract file ID
-                if (this.amvObject.download != null && this.amvObject.download.length > 0) {
+                if (this.amvObject.download != null && this.amvObject.dowload !== '' & 
+                    this.amvObject.download.length > 0) {
                     const drive = matchDriveUrl(this.amvObject.download);
                     if (!drive) {
                         this.errors.download = "Your download URL is not valid. Please use a valid Google Drive shared file URL.";
@@ -361,20 +381,31 @@
                 return valid;
             },
 
-            /**
+           /**
             * Checks whether any errors should be displayed to the user.
-            * @params {String: Input field that may display error}
+            * @param {String field: Input field that may display error}
             * @returns {Boolean}
             */
-            showError: function(field) {
+            showError(field) {
                 return this.errors[field].length > 0 && this.saveButtonStatus === 'Failed';
             },
-            baywatch: function(props, watcher) {
+
+            /**
+             * Watches an array of properties for changes
+             * @param {Array props: properties to be watched}
+             * @param {Function watcher: method to be executed once a change has been detected}
+             */
+            baywatch(props, watcher) {
                 var iterator = function(prop) {
                     this.$watch(prop, watcher);
                 };
                 props.forEach(iterator, this);
             },
+
+            /**
+             * Once a change to one of the input fields has been made, reset buttons so that the user can
+             * save additional changes
+             */
             notifyChange: function() {
                 if (this.saveButtonDisabled) {
                     this.saveButtonDisabled = false;
@@ -382,8 +413,12 @@
                     this.cancelButtonStatus = 'Cancel';
                 }
             },
+
+            /**
+             * When the user clicks on 'Cancel'/'Back', go back to AMV overview page
+             */
             goBack() {
-                this.$router.go(-1);
+                this.$router.push('/dashboard/amvs');
             }
         }
         

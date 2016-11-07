@@ -159,9 +159,7 @@ class AMVController extends Controller
             'music' => 'required',
             'animes' => 'required',
             'poster' => 'image|mimes:jpeg,png,jpg|max:500',
-            'bg' => 'image|mimes:jpeg,png,jpg|max:500',
-            'video' => 'url',
-            'download' => 'url'
+            'bg' => 'image|mimes:jpeg,png,jpg|max:500'
         ]);
 
         // Create a new AMV model with the input data that doesn't need to be further processed

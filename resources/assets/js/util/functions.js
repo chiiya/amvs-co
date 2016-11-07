@@ -31,4 +31,15 @@ function capitalize(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-export { matchYoutubeUrl, matchVimeoUrl, matchDriveUrl };
+function setNav(active) {
+    console.log("Setting active.." + active);
+    const navelements = document.getElementsByClassName('elem');
+    for (let i=0; i<navelements.length; i++) {
+        navelements[i].classList.remove('active');
+    }
+    if (active > -1) {
+        navelements[active].classList.add('active');
+    }
+}
+
+export { matchYoutubeUrl, matchVimeoUrl, matchDriveUrl, setNav };

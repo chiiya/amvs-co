@@ -64,7 +64,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'name' => 'required|unique:users|alpha_dash|max:20',
+            'name' => 'required|unique:users|alpha_dash|max:30',
             'email' => 'required|unique:users|email',
             'password' => 'required'
         ]);
@@ -117,7 +117,7 @@ class UserController extends Controller
             $filename = uniqid($prefix).'.'.$request->avatar->extension();
             $request->avatar->move(public_path('images'), $filename);
             $oldavatar = public_path() . $user->avatar;
-            unlink($oldavatar);
+            if (file_exists ($oldavatar)) unlink($oldavatar);
             $user->avatar = '/images/' . $filename;
         }
 

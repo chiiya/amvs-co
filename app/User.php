@@ -28,6 +28,9 @@ class User extends Authenticatable
         'password', 'remember_token', 'email', 'created_at', 'updated_at'
     ];
 
+    /**
+     * One-To-Many Relationship: One user has many AMVs.
+     */
     public function amvs()
     {
         return $this->hasMany('App\AMV', 'user_id');

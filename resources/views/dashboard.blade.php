@@ -4,13 +4,11 @@
 
 @section('meta')
     @parent
-    <meta name="user" id="{{ $user->id }}">
 @endsection
 
 
 @section('styles')
     @parent
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -18,14 +16,18 @@
     <nav class="nav nav--side nav--fixed nav--slide">
         <ul>
             <li class="dashboard__user">
+                @if($user->avatar)
                 <img class="img--circle avatar" src='{{ $user->avatar }}'/>
+                @else 
+                <img class="img--circle avatar" src="/img/avatars/default.jpg" />
+                @endif
                 <div>
                     <h3><a href="/user/{{ $user->name }}">{{ $user->name }}</a></h3>
                     <p><router-link to="/dashboard/profile">Edit Profile</router-link></p>
                 </div>
             </li>
-            <li><router-link class="elem" to="/dashboard" v-on:click="setNav()"><i class="material-icons">home</i> Dashboard</router-link></li>
-            <li><router-link class="elem" to="/dashboard/amvs" v-on:click="setNav()"><i class="material-icons">movie</i> My AMVS</router-link></li>
+            <li><router-link class="elem" to="/dashboard"><i class="material-icons">home</i> Dashboard</router-link></li>
+            <li><router-link class="elem" to="/dashboard/amvs"><i class="material-icons">movie</i> My AMVS</router-link></li>
         </ul>
     </nav>
     <main class="dashboard__content">
@@ -48,5 +50,6 @@
 
 @section('scripts')
   @parent
+  <script src="/js/app.js"></script>
   <script src="/js/dashboard.js"></script>
 @endsection

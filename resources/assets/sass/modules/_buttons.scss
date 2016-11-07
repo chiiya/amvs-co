@@ -17,7 +17,7 @@
     &--rounded {
         text-transform: uppercase;
         letter-spacing: 0.1rem;
-        border-radius: 2rem;
+        border-radius: 1.5rem;
         padding: 13px 30px;
     }
 
@@ -44,12 +44,12 @@
     }
 
     &--secondary {
-        background-color: darken($color-accent, 10%);
-        color: #fff;
+        background-color: $color-secondary;
+        color: $color-light-1;
 
         &:hover, &:active, &:focus {
-            background-color: darken($color-accent, 20%);
-            color: #fff;
+            background-color: darken($color-secondary, 10%);
+            color: $color-light-1;
         }
     }
 

@@ -6,42 +6,53 @@ const store = new Vuex.Store({
     state: {
         /**
          * Currently authenticated user
+         * @type {Object}
          */
         user: {},
         /**
          * List of all AMVs by the current user
+         * @type {Object}
          */
         amvs: {},
         /**
          * List of all available AMV genres
+         * @type {Array}
          */
         genres: [],
         /**
          * List of all available contests
+         * @type {Array}
          */
         contests: [],
         /**
          * Shorthand for all months. Necessary for reformatting AMV creation date
+         * @type {Array}
          */
         months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
         /**
          * Currently fetching data from the API?
+         * @type {Boolean}
          */
         loading: false,
         /**
          * Currently displayed parent component (for breadcrumbs)
+         * @type {Object}
          */
         parent: {
             title: 'Overview',
             path: ''
         },
+        /**
+         * Error message
+         * @type {String}
+         */
         failure: ''
     },
 
     actions: {
         /**
          * Fetch a user. First check if the user is already stored in Vuex, if that is the case
-         * the simply return it. Otherwise make a call to the API and then store in Vuex.
+         * then simply return it. Otherwise make a call to the API and then store in Vuex.
          */
         FETCH_USER: ({commit, state}) => {
             const isEmpty = Object.keys(state.user).length === 0
@@ -59,6 +70,7 @@ const store = new Vuex.Store({
                     commit('FAILURE', error)
                 });
         },
+
         /**
          * Fetch all AMVs of a user by the user's ID. Once done, store in Vuex
          */
@@ -75,6 +87,10 @@ const store = new Vuex.Store({
                 });
         },
 
+        /**
+         * Fetch a single AMV. First check if the AMV is already stored in Vuex, if that is the case
+         * then simply return it. Otherwise make a call to the API.
+         */
         FETCH_AMV: ({commit, state}, id) => {
             if (!state.amvs[id]) commit('SET_LOADING', { val: true });
             return state.amvs[id]
@@ -82,13 +98,19 @@ const store = new Vuex.Store({
                 : api.getAMV(id)
                     .then((response) => {
                         commit('SET_LOADING', { val: false });
-                        return Promise.resolve(response);
+                        if (response.user.id === state.store.user.id) {
+                            return Promise.resolve(response);
+                        } else {
+                            return Promise.reject({body: 'Not the owner of this AMV.'});
+                        }
+                        
                     })
                     .catch((error) => {
                         commit('SET_LOADING', { val: false });
                         commit('FAILURE', error)
                     });
         },
+
         /**
          * Fetch all AMV genres from the API. Once done, store in Vuex
          */
@@ -121,6 +143,9 @@ const store = new Vuex.Store({
                 });
         },
 
+        /**
+         * Update a user
+         */
         PATCH_USER: ({commit}, payload) => {
             return api.updateUser(payload.id, payload.data)
                 .then((response) => Promise.resolve(response))
@@ -192,6 +217,7 @@ const store = new Vuex.Store({
     },
 
     mutations: {
+        
         FAILURE: (state, error) => {
             state.failure = error.body;
         },
@@ -205,6 +231,8 @@ const store = new Vuex.Store({
 
         SET_AMVS: (state, amvs) => {
             amvs.forEach(amv => {
+                const date = new Date(amv.created_at);
+                amv.date = state.months[date.getMonth()] + ' ' + date.getFullYear();
                 for (let key in amv) {
                     if (amv[key] === 'null') amv[key] = '';
                 }
@@ -259,12 +287,18 @@ const store = new Vuex.Store({
             }
         },
 
+        /**
+         * For Breadcrumbs
+         */
         SET_PARENT: (state, parent) => {
             state.parent = parent;
         }
     },
 
     getters: {
+        /**
+         * Map AMVs object to an array
+         */
         amvs: state => {
             return Object.keys(state.amvs).map(key => state.amvs[key]);
         }

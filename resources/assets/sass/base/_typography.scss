@@ -59,12 +59,12 @@ h2 {
     text-transform: uppercase;
     letter-spacing: 0.1rem;
     padding-bottom: 0.2rem;
-    color: darken($color-accent, 5%);
+    color: $color-primary;
     display: inline-block;
     margin: 0;
 
     &.border {
-        border-bottom: 2px solid darken($color-accent, 5%);
+        border-bottom: 1px solid $color-primary;
     }
     
 }

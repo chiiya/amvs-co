@@ -17,6 +17,10 @@
 <script>
     export default {
         computed: {
+            /**
+             * Current loading status (loading is true if data is being loaded asynchronously)
+             * @returns {Boolean}
+             */
             loading() {
                 return this.$store.state.loading;
             }

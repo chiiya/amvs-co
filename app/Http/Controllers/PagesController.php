@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Auth;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -19,6 +19,32 @@ use App\User;
 */
 class PagesController extends Controller
 {
+    /**
+     * Show login page
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showLogin() 
+    {
+        if (Auth::check()) return redirect()->route('dashboard');
+        $amvs = AMV::where('published', true)
+            ->orderBy('created_at', 'DESC')
+            ->with('user')->simplePaginate(9);
+        return view('login', [
+            'amvs' => $amvs
+        ]);
+    }
+
+    /**
+     * Show signup page
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showSignup()
+    {
+        if (Auth::check()) return redirect()->route('dashboard');
+        return view('signup');
+    }
 
     /**
      * Show details page of specified AMV by url parameters
@@ -54,8 +80,11 @@ class PagesController extends Controller
     {
         try {
             $user = User::where('name', $name)->firstOrFail();
-            $amvs = AMV::where('user_id', $user->id)->where('published', true)->with('user', 'genres', 'awards')->get();
-            $latest = $amvs->last();
+            $amvs = AMV::where('user_id', $user->id)
+                ->where('published', true)
+                ->orderBy('created_at','DESC')
+                ->with('user', 'genres', 'awards')->get();
+            $latest = $amvs->first();
             return view('profile', [
                 'user' => $user,
                 'amvs' => $amvs,
