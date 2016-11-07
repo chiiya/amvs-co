@@ -101,6 +101,7 @@
                         <p v-for="error in submitErrors" class="error">
                             {{ error }}
                         </p>
+                        <pre> {{ debug }}</pre>
                     </div>
                 </div>
             </div>
@@ -142,7 +143,8 @@
                 bg: '',
                 saveButtonDisabled: false,
                 saveButtonStatus: 'Save',
-                cancelButtonStatus: 'Cancel'
+                cancelButtonStatus: 'Cancel',
+                debug: ''
             }
         },
 
@@ -280,7 +282,11 @@
                 }
 
                 this.$store.dispatch('STORE_AMV', formData)
-                    .then(() => {
+                    .then((response) => {
+                        let newAMV = response;
+                        newAMV.genres = this.amvObject.genres;
+                        newAMV.awards = [];
+                        this.$store.commit('ADD_AMV', newAMV);
                         this.saveButtonStatus = 'Saved';
                         this.cancelButtonStatus = 'Back';
                     })
@@ -291,6 +297,7 @@
                                 this.submitErrors.push(error.body[key][0]);
                             }
                         } else {
+                            this.debug = error.body;
                             this.submitErrors.push("Server Error. Please try again later.");
                         }
                         

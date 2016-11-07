@@ -46,10 +46,11 @@ body.dashboard {
             margin-top: 30px;
         }
     }
-    .labels {
+}
+
+.labels {
         margin-top: 10px;
     }
-}
 
 .dashboard__index {
     h3 + .button {
@@ -272,6 +273,7 @@ img.preview {
 }
 
 @media only screen and (max-width : 515px) {
+    body.dashboard {
     .card-image img  {
         display: none !important;
     }
@@ -286,6 +288,7 @@ img.preview {
                 margin-right: 5px;
             }
         }
+    }
     }
     .dashboard__index .button {
         margin-right: 0;

@@ -2344,8 +2344,9 @@ body.dashboard {
         background-color: #494c62; }
     body.dashboard .nav--side li:nth-of-type(2) {
       margin-top: 30px; }
-  body.dashboard .labels {
-    margin-top: 10px; }
+
+.labels {
+  margin-top: 10px; }
 
 .dashboard__index h3 + .button {
   float: right;
@@ -2515,15 +2516,15 @@ img.preview {
     margin-top: 0; } }
 
 @media only screen and (max-width: 515px) {
-  .card-image img {
+  body.dashboard .card-image img {
     display: none !important; }
-  .card .card-action {
+  body.dashboard .card .card-action {
     padding: 10px 20px 10px 20px; }
-    .card .card-action a {
+    body.dashboard .card .card-action a {
       display: inline-block;
       margin-top: 5px;
       margin-bottom: 5px; }
-      .card .card-action a:nth-of-type(2) {
+      body.dashboard .card .card-action a:nth-of-type(2) {
         margin-left: 5px;
         margin-right: 5px; }
   .dashboard__index .button {

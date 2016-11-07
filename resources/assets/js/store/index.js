@@ -93,7 +93,6 @@ const store = new Vuex.Store({
          */
         FETCH_AMV: ({commit, state}, id) => {
             const exists = id in state.amvs;
-            console.log(id);
             if (!exists) commit('SET_LOADING', { val: true });
             return exists 
                 ? Promise.resolve(state.amvs[id])
@@ -187,7 +186,8 @@ const store = new Vuex.Store({
         STORE_AMV: ({commit}, amv) => {
             return api.storeAMV(amv)
                 .then((response) => {
-                    commit('ADD_AMV', response);
+                    console.log("success");
+                    return Promise.resolve(response)
                 })
                 .catch((error) => Promise.reject(error));
         },

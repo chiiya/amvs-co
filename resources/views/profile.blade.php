@@ -41,15 +41,11 @@
                                     href="/user/{{ $user->name }}/{{ $amv->url }}">
                                     {{ $amv->title }}
                                 </a></span>
-                                <p>
+                                <div class="labels">
                                 @foreach ($amv->genres as $genre)
-                                    @if ($loop->last)
-                                        {{ $genre->name }}
-                                    @else
-                                        {{ $genre->name . ' - ' }}
-                                    @endif
+                                    <span><span class="label label-primary">{{ $genre->name }}</span> &nbsp;</span>
                                 @endforeach
-                                </p>
+                                </div>
                                 <p>
                                 {{  $amv->created_at->format('M Y') }}
                                 </p>
