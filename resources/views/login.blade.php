@@ -72,15 +72,11 @@
                       @endif
                         </a></span>
                       <p><a class="profile-link" href="/user/{{ $amv->user->name }}/">{{ $amv->user->name }}</a></p>
-                      <p>
+                      <div class="labels">
                         @foreach ($amv->genres as $genre)
-                          @if ($loop->last)
-                            {{ $genre->name }}
-                          @else
-                            {{ $genre->name . ' - ' }}
-                          @endif
+                          <span><span class="label label-primary">{{ $genre->name }}</span> &nbsp;</span>
                         @endforeach
-                      </p>
+                      </div>
                     </div>
                   <div class="card-action">
                     <a class="button button--square button--transparent button--primary" href="/user/{{ $amv->user->name }}/{{ $amv->url }}">Watch Now</a>
