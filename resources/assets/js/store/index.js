@@ -92,17 +92,15 @@ const store = new Vuex.Store({
          * then simply return it. Otherwise make a call to the API.
          */
         FETCH_AMV: ({commit, state}, id) => {
-            if (!state.amvs[id]) commit('SET_LOADING', { val: true });
-            return state.amvs[id]
+            const exists = id in state.amvs;
+            console.log(id);
+            if (!exists) commit('SET_LOADING', { val: true });
+            return exists 
                 ? Promise.resolve(state.amvs[id])
                 : api.getAMV(id)
                     .then((response) => {
                         commit('SET_LOADING', { val: false });
-                        if (response.user.id === state.store.user.id) {
-                            return Promise.resolve(response);
-                        } else {
-                            return Promise.reject({body: 'Not the owner of this AMV.'});
-                        }
+                        return Promise.resolve(response);
                         
                     })
                     .catch((error) => {

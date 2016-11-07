@@ -32,7 +32,6 @@ function capitalize(string) {
 }
 
 function setNav(active) {
-    console.log("Setting active.." + active);
     const navelements = document.getElementsByClassName('elem');
     for (let i=0; i<navelements.length; i++) {
         navelements[i].classList.remove('active');

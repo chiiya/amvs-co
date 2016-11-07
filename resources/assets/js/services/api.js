@@ -33,6 +33,7 @@ export default {
     },
 
     getAMV(id) {
+        console.log("GET /api/amvs/" + id);
         return Vue.http.get(`/api/amvs/${id}`)
             .then((response) => Promise.resolve(response.body))
             .catch((error) => Promise.reject(error));
