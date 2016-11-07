@@ -12,7 +12,6 @@
 @endsection
 
 @section('content')
-    <div id="app">
         @include('modules.userbar')
 
         @include('modules.latestAMV')
@@ -65,7 +64,6 @@
                 </div>
             </div>
         </main>
-    </div>
 @endsection
 
 @section('scripts')
