@@ -5782,7 +5782,7 @@ img.preview {
   margin-top: -1px !important; }
 
 .dashboard__form {
-  max-width: 1100px; }
+  max-width: 1400px; }
   .dashboard__form input[type="submit"]:nth-child(2), .dashboard__form #cancel {
     margin-left: 20px; }
   .dashboard__form label.delete {
