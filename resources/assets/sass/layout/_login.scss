@@ -1,118 +1,185 @@
-/**
+    /**
 LOGIN PAGE 
 **/
-
-body.login {
-    background-color: #100b0f;
-    .row {
-        margin-bottom: 5%;
-    }
-    #app {
+    
+    body.login, body.signup {
+        height: 100%;
+        background-color: $color-bg;
+        .row {
+            margin-bottom: 5%;
+        }
         p {
-        color: $color-text-light;
+            color: $color-text-gray;
         }
         h2 {
             font-weight: 300;
         }
         header {
+            height: 80%;
+            min-height: 600px;
+            background-image: url(/img/bgs/home.jpg);
+            background-size: cover;
+            h1,
+            h2 {
+                color: $color-bg;
+            }
             .container {
                 margin-top: 5%;
                 margin: 0 auto;
-                text-align: center;
+                &.center {
+                    text-align: center;
+                }
             }
         }
-        a {
-            text-align: center;
-            display: inline-block;
-            margin-top: 15px;
-            color: darken($color-primary, 30%);
-            &:hover, &:active, &:focus {
+        #app {
+            a:hover,
+            a:active,
+            a:focus {
                 text-decoration: none;
                 color: darken($color-primary, 15%);
             }
         }
     }
-    
-}
 
-div.form {
-    ul {
-        padding: 0;
-        list-style: none;
-        margin: 20px auto 0 auto;
-        max-width: 428px;
-        li {
-            display: inline-block;
-            font-family: $font-secondary;
-            font-size: 1.8rem;
-            text-transform: uppercase;
-            &:nth-child(2) {
-                margin-left: 3rem;
-            }
-        }
-    }
-    .row {
-        margin-top: 20px;
-    }
-    form {
-        margin: 0 auto;
-        max-width: 428px;
-    }
-    input {
-        font-family: $font-primary;
-        font-weight: 300;
+    .help-block strong {
         font-size: 1.4rem;
-        border: 0;
-        outline: none;
-        &[type="text"],
-        &[type="password"],
-        &[type="email"] {
-            display: block;
-            width: 100%;
-            border-bottom: 1px solid $color-form;
-            background-color: transparent;
-            color: darken($color-primary, 5%);
-            margin-bottom: 10px;
-            padding: 10px 0px;
+        color: $color-error;
+        text-transform: none;
+    }
+    
+    .checkbox {
+        label {
+            text-transform: none;
         }
-        &[type="submit"] {
-            padding: 10px 60px;
-            background-color: $color-form;
-            color: lighten($color-form, 30%);
-            ;
-            text-transform: uppercase;
-            border-radius: 5px;
-            &:active,
-            &:hover,
-            &:focus {
-                background-color: lighten($color-form, 10%);
+        [type="checkbox"] {
+            // Text Label Style
+            +label {
+                display: inline-block;
+                padding-left: 25px;
+            }
+        }
+        [type="checkbox"].filled-in {
+            +label:before,
+            +label:after {
+                margin-top: 4px;
+            }
+            &:not(:checked)+label:after {
+                height: 15px;
+                width: 15px;
+                border: 1px solid #a9a9a9;
+            }
+            // Checked style
+            &:checked {
+                +label:before {
+                    top: 2px;
+                    left: 1px;
+                    width: 6px;
+                    height: 10px;
+                    border-top: 2px solid transparent;
+                    border-left: 2px solid transparent;
+                    border-right: 2px solid $input-background;
+                    border-bottom: 2px solid $input-background;
+                    -webkit-transform: rotateZ(37deg);
+                    transform: rotateZ(37deg);
+                    -webkit-transform-origin: 100% 100%;
+                    transform-origin: 100% 100%;
+                }
+                +label:after {
+                    width: 15px;
+                    height: 15px;
+                    border: 1px solid $color-sidenav-user;
+                }
             }
         }
     }
-    ::-webkit-input-placeholder {
-        /* WebKit, Blink, Edge */
-        font-family: $font-secondary;
-        color: lighten($color-form, 10%);
-        text-transform: uppercase;
+    
+    .login-card {
+        max-width: 440px;
+        margin: 5rem auto 1rem auto;
+        background-color: #fff;
+        border-radius: 2px;
+        -webkit-transition: box-shadow .25s;
+        transition: box-shadow .25s;
+        box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
     }
-    :-moz-placeholder {
-        /* Mozilla Firefox 4 to 18 */
-        font-family: $font-secondary;
-        color: lighten($color-form, 10%);
-        opacity: 1;
-        text-transform: uppercase;
+    
+    .login-card-content {
+        padding: 10px 20px;
+        .card-title {
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            padding: 0 0 10px 0;
+            border-bottom: 1px solid lighten($color-text-light, 40%);
+        }
     }
-    ::-moz-placeholder {
-        /* Mozilla Firefox 19+ */
-        font-family: $font-secondary;
-        color: lighten($color-form, 10%);
-        opacity: 1;
-        text-transform: uppercase;
+    
+    div.form {
+        form {
+            margin: 0 auto;
+            max-width: 428px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+        input {
+            font-family: $font-primary;
+            font-weight: 300;
+            font-size: 1.4rem;
+            border: 0;
+            outline: none;
+            &[type="text"],
+            &[type="password"] {
+                display: block;
+                width: 100%;
+                border-bottom: 1px solid lighten($color-text-light, 30%);
+                border-radius: 0;
+                background-color: transparent;
+                color: darken($color-primary, 5%);
+                margin-bottom: 10px;
+                padding: 10px 0px;
+            }
+            &[type="submit"] {
+                margin-top: 20px;
+            }
+        }
+        p {
+            margin-top: 5px;
+            a {
+                text-transform: none;
+                font-size: 1.4rem;
+                color: $color-text-light;
+            }
+        }
+         ::-webkit-input-placeholder {
+            /* WebKit, Blink, Edge */
+            color: $color-text-gray;
+        }
+         :-moz-placeholder {
+            /* Mozilla Firefox 4 to 18 */
+            color: $color-text-gray;
+            opacity: 1;
+        }
+         ::-moz-placeholder {
+            /* Mozilla Firefox 19+ */
+            color: $color-text-gray;
+            opacity: 1;
+        }
+         :-ms-input-placeholder {
+            /* Internet Explorer 10-11 */
+            color: $color-text-gray;
+        }
     }
-    :-ms-input-placeholder {
-        /* Internet Explorer 10-11 */
-        font-family: $font-secondary;
-        color: lighten($color-form, 10%);
-        text-transform: uppercase;
+
+    @media (max-width: 500px) {
+        .container {
+            padding-left: 0;
+            padding-right: 0;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 100%;
+            border-radius: 0;
+        }
+        form {
+            max-width: 100%;
+        }
     }
-}
