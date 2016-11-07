@@ -1,6 +1,6 @@
 @if(isset($latest))
     @if ($latest['bg'])
-    <header style="background: linear-gradient(rgba(0, 0, 0, 0.5),rgba(0, 0, 0, 0.5)),url({{ $latest->bg }}) bottom right / cover no-repeat">
+    <header style="background: linear-gradient(rgba(0, 0, 0, 0.5),rgba(0, 0, 0, 0.5)),url({{ $latest->bg }}) center top / cover no-repeat">
     @else
     <header>
     @endif

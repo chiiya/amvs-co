@@ -3,8 +3,6 @@
 @section('title', 'Login') 
 
 @section('content')
-
-<div id="app">
   <header>
     <div class="container center">
       <h1>AMVS.CO</h1>
@@ -94,7 +92,6 @@
         </div>
       </div>
     </main>
-  </div>
   @endsection 
   
   @section('scripts') 

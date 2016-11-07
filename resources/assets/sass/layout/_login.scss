@@ -15,10 +15,11 @@ LOGIN PAGE
             font-weight: 300;
         }
         header {
-            height: 80%;
+            height: 90%;
             min-height: 600px;
             background-image: url(/img/bgs/home.jpg);
             background-size: cover;
+            background-position: center top;
             h1,
             h2 {
                 color: $color-bg;
@@ -27,6 +28,7 @@ LOGIN PAGE
                 margin-top: 5%;
                 margin: 0 auto;
                 &.center {
+                    padding-top: 20px;
                     text-align: center;
                 }
             }
