@@ -33,6 +33,9 @@ body.amv {
         font-size: 1.5rem;
         color: $color-text-light;
     }
+    .content h2 {
+        color: $color-secondary;
+    }
     .embed-container {
         position: relative;
         padding-bottom: 56.25%;
