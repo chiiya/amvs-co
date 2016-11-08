@@ -47,3 +47,10 @@
         }
     }
 }
+
+@media (max-width: 600px) {
+    .userbar ul li:first-of-type {
+        padding-left: 20px;
+        display: block;
+    }
+}

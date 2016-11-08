@@ -172,7 +172,7 @@ LOGIN PAGE
     }
 
     @media (max-width: 500px) {
-        .container {
+        body.login.container, body.signup.container {
             padding-left: 0;
             padding-right: 0;
         }

@@ -67,7 +67,7 @@ body.dashboard {
 
     padding-left: 240px;
     margin-top: 50px;
-    .col-xs-12 { padding-left: 0; padding-right: 30px; }
+    .col-xs-12 { padding-left: 0; margin-bottom: 20px; }
 
     h3 {
         font-family: $font-primary;
@@ -81,7 +81,6 @@ body.dashboard {
         .row {
             margin-right: 0;
             margin-left: 0;
-            margin-bottom: 20px;
         }
         margin-bottom: 5%;
     }

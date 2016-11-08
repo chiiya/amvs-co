@@ -50,3 +50,10 @@ body.amv {
         height: 100%;
     }
 }
+
+@media (max-width: 800px) {
+    .content .row {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
