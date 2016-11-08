@@ -3,7 +3,7 @@
         <h3>AMV Overview</h3>
         <router-link 
             to="/dashboard/amvs/create" 
-            class="button button--square button--primary z-depth-1">
+            class="create button button--square button--primary z-depth-1">
             New AMV
         </router-link>
         <loading></loading>

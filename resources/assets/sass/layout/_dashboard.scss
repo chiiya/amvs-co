@@ -265,6 +265,18 @@ img.preview {
         }
     }
 
+    nav:not(.nav--side) a.button-collapse {
+        margin-left: 0;
+    }
+
+    .breadcrumb:first-child, .is-right {
+        margin-left: 15px;
+    }
+
+    body.dashboard .nav--side li:not(:first-of-type) i {
+        padding-left: 15px;
+    }
+
     .dashboard__content {
         padding-left: 0;
         margin-top: 0;
@@ -289,7 +301,7 @@ img.preview {
         }
     }
     }
-    .dashboard__index .button {
+    .dashboard__index .button:not(.create) {
         margin-right: 0;
     }
 }
