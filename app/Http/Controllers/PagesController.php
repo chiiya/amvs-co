@@ -64,6 +64,7 @@ class PagesController extends Controller
                 ->withCount('likes')
                 ->firstOrFail();
             $likedByUser = false;
+            $like = null;
             if (Auth::check()) {
                 $like = Like::where('amv_id', $amv->id)->where('user_id', Auth::user()->id)->first();
                 if ($like !== null) {
