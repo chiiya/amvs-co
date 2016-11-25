@@ -33,7 +33,7 @@ header {
             font-size: 1.5rem;
             font-weight: 300;
 
-            &:nth-child(2) {
+            &:not(:first-child) {
                 margin-left: 3rem;
             }
         }

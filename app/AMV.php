@@ -56,4 +56,9 @@ class AMV extends Model
     {
         return $this->hasMany('App\Award', 'amv_id');
     }
+
+    public function likes() 
+    {
+        return $this->hasMany('App\Like', 'amv_id');
+    }
 }

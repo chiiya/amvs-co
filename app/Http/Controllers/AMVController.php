@@ -38,6 +38,7 @@ class AMVController extends Controller
                 $amv = AMV::where('user_id', $user)
                     ->where('title', $title)
                     ->with('user', 'genres', 'awards.contest')
+                    ->withCount('likes')
                     ->firstorFail();
                 return response()->json($amv, 200);
             } catch (ModelNotFoundException $e) {
@@ -48,6 +49,7 @@ class AMVController extends Controller
         // Otherwise return all AMVs of specified user
         $amvs = AMV::where('user_id', $user)
             ->with('user', 'genres', 'awards.contest')
+            ->withCount('likes')
             ->get();
         return response()->json($amvs, 200);
     }
@@ -61,7 +63,10 @@ class AMVController extends Controller
     public function show($id) 
     {
         try {
-            $amv = AMV::where('id', $id)->with('user', 'genres', 'awards.contest')->firstOrFail();
+            $amv = AMV::where('id', $id)
+                ->with('user', 'genres', 'awards.contest')
+                ->withCount('likes')
+                ->firstOrFail();
             return response()->json($amv, 200);
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'AMV could not be found'], 404);

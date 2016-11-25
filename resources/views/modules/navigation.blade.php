@@ -29,7 +29,6 @@
         <ul id="nav-mobile" class="side-nav">
             <li><a href="/">AMVS-CO</a></li>
             <li><a href="/">Home</a></li>
-            <li><a href="/users">Users</a></li>
             <li><a href="/amvs">AMVs</a></li>
             <li><a href="/contests">Contests</a></li>
             @if (Auth::check())

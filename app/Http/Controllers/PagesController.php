@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\AMV;
 use App\User;
+use App\Like;
 
 
 /*
@@ -57,11 +58,24 @@ class PagesController extends Controller
     {
         try {
             $user = User::where('name', $name)->firstOrFail();
-            $amv = AMV::where('user_id', $user->id)->where('url', $amv)->with('user', 'genres', 'awards')->firstOrFail();
+            $amv = AMV::where('user_id', $user->id)
+                ->where('url', $amv)
+                ->with('user', 'genres', 'awards')
+                ->withCount('likes')
+                ->firstOrFail();
+            $likedByUser = false;
+            if (Auth::check()) {
+                $like = Like::where('amv_id', $amv->id)->where('user_id', Auth::user()->id)->first();
+                if ($like !== null) {
+                    $likedByUser = true;
+                }
+            }
             if ($amv->published) {
                 return view('amv', [
                     'amv' => $amv,
-                    'user' => $user
+                    'user' => $user,
+                    'likedByUser' => $likedByUser,
+                    'like' => $like
                 ]);
             }
             return view('404');       
@@ -83,7 +97,9 @@ class PagesController extends Controller
             $amvs = AMV::where('user_id', $user->id)
                 ->where('published', true)
                 ->orderBy('created_at','DESC')
-                ->with('user', 'genres', 'awards')->get();
+                ->with('user', 'genres', 'awards')
+                ->withCount('likes')
+                ->get();
             $latest = $amvs->first();
             return view('profile', [
                 'user' => $user,

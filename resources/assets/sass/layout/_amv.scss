@@ -52,6 +52,54 @@ body.amv {
         width: 100%;
         height: 100%;
     }
+    li:last-child {
+        span {
+            font-size: 1.5rem;
+        }
+    }
+
+    .amv__like--filled, .amv__like--unfilled {
+        float: right;
+    }
+
+    .amv__like--unfilled {
+
+        .like-fill {
+        display: none;
+        }
+
+        svg:hover {
+            cursor: pointer;
+
+            .like-empty {
+                display: none;
+            }
+
+            .like-fill {
+                display: block;
+            }
+        }
+    }
+
+    .amv__like--filled {
+
+        .like-hover {
+        display: none;
+        }
+
+        svg:hover {
+            cursor: pointer;
+
+            .like-fill {
+                display: none;
+            }
+
+            .like-hover {
+                display: block;
+            }
+        }
+    }
+    
 }
 
 @media (max-width: 800px) {

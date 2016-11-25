@@ -31,6 +31,14 @@ body.profile, body.login {
   }
 }
 
+.card__likes {
+  float: right;
+  span {
+    color: #9E9E9E;
+    font-size: 1.4rem;
+  }
+}
+
 .poster-placeholder {
   height: 350px;
   display: flex;

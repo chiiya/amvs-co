@@ -67,6 +67,12 @@ Route::group(['prefix' => 'api'], function () {
         Route::put('/awards/{id}', 'AwardController@update');
         Route::delete('/awards/{id}', 'AwardController@destroy');
     });
+
+    // Ressource: Like
+    Route::group(['middleware' => 'auth'], function() {
+        Route::post('/likes', 'LikeController@store');
+        Route::delete('/likes/{id}', 'LikeController@destroy');
+    });
     
     // Ressource: Genre
     Route::get('/genres', function() {

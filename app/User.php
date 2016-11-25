@@ -35,4 +35,12 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\AMV', 'user_id');
     }
+
+    /**
+     * One-To-Many Relationship: One user has many Likes.
+     */
+    public function likes()
+    {
+        return $this->hasMany('App\Like', 'user_id');
+    }
 }

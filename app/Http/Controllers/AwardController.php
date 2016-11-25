@@ -94,7 +94,7 @@ class AwardController extends Controller
             return response()->json('{}', 200);
 
         } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'AMV could not be found'], 404);
+            return response()->json(['error' => 'AMV or Award could not be found'], 404);
         }
     }
 }
