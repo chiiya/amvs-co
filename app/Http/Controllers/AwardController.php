@@ -2,11 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\AMVService;
 use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use App\Award;
-use App\AMV;
 
 class AwardController extends Controller
 {
@@ -16,31 +13,20 @@ class AwardController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(AMVService $service, Request $request)
     {
-        $input = $request->json()->all();
-        try {
-            $amv = AMV::findOrFail($input['amv_id']);
-            if ($amv->user_id !== $request->user()->id) {
-                return response()
-                    ->json(['error' => "Unauthorized. Not the owner of this AMV."], 401);
-            }
-
-            $award = Award::create([
-                'award' => $input['award'],
-                'amv_id' => $amv->id,
-                'contest_id' => $input['contest_id']
-            ]);
-
-            return response()->json($award, 201);
-
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'AMV could not be found'], 404);
+        $award = $service->storeAward($request);
+        if (!is_int($award)) return response()->json($award, 201);
+        switch($award) {
+            case 401:
+                return response()->json(['error' => "Unauthorized. Not the owner of this AMV."], 401);
+            case 404:
+                return response()->json(['error' => 'AMV could not be found'], 404);
+            default:
+                return response()->json(['error' => 'Server Error'], 500);
         }
-   
     }
 
-   
     /**
      * Update the specified resource in storage.
      *
@@ -48,28 +34,18 @@ class AwardController extends Controller
      * @param int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(AMVService $service, Request $request, $id)
     {
-        $input = $request->json()->all();
-        try {
-            $award = Award::findOrFail($id);
-            $amv = AMV::findOrFail($input['amv_id']);
-            if ($amv->user_id !== $request->user()->id) {
-                return response()
-                    ->json(['error' => "Unauthorized. Not the owner of this AMV."], 401);
-            }
-
-            $award->award = $input['award'];
-            $award->save();
-
-            $award->contest = $input['contest'];
-
-            return response()->json($award, 200);
-
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'AMV could not be found'], 404);
+        $award = $service->updateAward($request, $id);
+        if (!is_int($award)) return response()->json($award, 200);
+        switch($award) {
+            case 401:
+                return response()->json(['error' => "Unauthorized. Not the owner of this AMV."], 401);
+            case 404:
+                return response()->json(['error' => 'AMV could not be found'], 404);
+            default:
+                return response()->json(['error' => 'Server Error'], 500);
         }
-
     }
 
     /**
@@ -79,22 +55,17 @@ class AwardController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy(AMVService $service, Request $request, $id)
     {
-        $input = $request->json()->all();
-        try {
-            $award = Award::findOrFail($id);
-            $amv = AMV::findOrFail($award->amv_id);
-            if ($amv->user_id !== $request->user()->id) {
-                return response()
-                    ->json(['error' => "Unauthorized. Not the owner of this AMV."], 401);
-            }
-
-            $award->delete();
-            return response()->json('{}', 200);
-
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'AMV or Award could not be found'], 404);
+        $result = $service->destroyAward($request, $id);
+        if (!is_int($result)) return response()->json("{}", 200);
+        switch($result) {
+            case 401:
+                return response()->json(['error' => "Unauthorized. Not the owner of this AMV."], 401);
+            case 404:
+                return response()->json(['error' => 'AMV could not be found'], 404);
+            default:
+                return response()->json(['error' => 'Server Error'], 500);
         }
     }
 }

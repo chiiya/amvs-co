@@ -1,8 +1,9 @@
 <template>
     <section class="dashboard__form is-right">
         <loading></loading>
-        <h3 v-show="!loading">Edit AMV: {{ updatedAMV.title }}</h3>
-        <div class="row" v-show="!loading">
+        <p v-if="!loading && !authorized" class="info">Unauthorized. Access was denied because you are not the owner of this AMV. Please make sure the URL you entered is correct, or <router-link to="/dashboard/amvs">go back to your AMV Overview</router-link>.</p>
+        <h3 v-if="!loading && authorized">Edit AMV: {{ updatedAMV.title }}</h3>
+        <div class="row" v-show="!loading && authorized">
             <div class="col-xs-12">
                 <div class="row">
                     <div class="col-xs-12 col-sm-6">
@@ -132,6 +133,7 @@
                     poster: ''
                 },
                 submitErrors: [],
+                authorized: true,
                 poster: '',
                 bg: '',
                 saveButtonDisabled: false,
@@ -194,33 +196,35 @@
 
         mounted: function () {
             setNav(1);
-            // Fetch AMV from Vuex. If not present in Vuex an API call gets made
-            this.$store.dispatch('FETCH_AMV', this.$route.params.id)
-                .then((response) => {
-                    // this.updatedAMV = response would create a copy by reference! All changes to updatedAMV
-                    // would cascade down to the store object as well.
-                    // JSON.parse(JSON.stringify) in order to create a new copy of the AMV, not by reference.
-                    // Needs to be done so that the user changes can be disregarded once he clicks 'Cancel'
-                    this.updatedAMV = JSON.parse(JSON.stringify(response));
-                })
-                .catch((error) => {
-                    this.submitErrors.push(error.body)
-                });
-            
-            // Only load genres from API if they aren't already stored in Vuex
-            if (!this.genres.length > 0) this.loadGenres();
-            // Watch input fields for user input
-            this.baywatch(['updatedAMV.title', 'updatedAMV.music', 'updatedAMV.animes', 'updatedAMV.video',
-                'updatedAMV.download', 'updatedAMV.genres', 'updatedAMV.published'
-                ], this.notifyChange.bind(this));
-
-            // On initial load, make the description textarea fit the description text.
-            this.$nextTick(function() {
-                this.resizeTextarea();
-            });  
+                // Fetch AMV from Vuex. If not present in Vuex an API call gets made
+                this.$store.dispatch('FETCH_AMV', this.$route.params.id)
+                    .then((response) => {
+                        // this.updatedAMV = response would create a copy by reference! All changes to updatedAMV
+                        // would cascade down to the store object as well.
+                        // JSON.parse(JSON.stringify) in order to create a new copy of the AMV, not by reference.
+                        // Needs to be done so that the user changes can be disregarded once he clicks 'Cancel'
+                        this.updatedAMV = JSON.parse(JSON.stringify(response));
+                        this.$nextTick(function() {
+                            this.initialize();
+                        });
+                        
+                    })
+                    .catch((error) => {
+                        if (error.status === 404 || error.status === 401) this.authorized = false;
+                        this.submitErrors.push(error.body)
+                    });
         },
 
         methods: {
+            initialize() {
+                // Only load genres from API if they aren't already stored in Vuex
+                if (!this.genres.length > 0) this.loadGenres();
+                // Watch input fields for user input
+                this.baywatch(['updatedAMV.title', 'updatedAMV.music', 'updatedAMV.animes', 'updatedAMV.video', 'updatedAMV.download', 'updatedAMV.genres', 'updatedAMV.published'],this.notifyChange.bind(this));
+
+                // On initial load, make the description textarea fit the description text.
+                this.resizeTextarea();  
+            },
            /**
             * Load a list of available genres to use for the multiselect
             */
@@ -232,9 +236,9 @@
             * Automaticaly expand (or reduce) the description textarea on user input
             */
             resizeTextarea() {
-                const textarea = document.getElementById('description');
-                textarea.style.height = "";
-                textarea.style.height = textarea.scrollHeight + "px";
+                let textarea = document.getElementById('description');
+                    textarea.style.height = "";
+                    textarea.style.height = textarea.scrollHeight + "px";
             },
 
            /**

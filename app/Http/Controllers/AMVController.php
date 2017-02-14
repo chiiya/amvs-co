@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\AMVService;
+use App\Http\Requests\AMVRequest;
+use App\Services\UserService;
 use Illuminate\Http\Request;
-use App\AMV;
-use App\Contest;
-use App\User;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use App\Http\Requests;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,31 +26,17 @@ class AMVController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(AMVService $service, Request $request)
     {
         if (!$user = $request->get('user')) 
-            return response()->json(['error' => 'Please filter by user ID and optionally AMV title.'], 400);
-        
-        // If AMV title is passed as query parameter, search for AMV with that title
-        if ($title = $request->get('title')) {
-            try {
-                $amv = AMV::where('user_id', $user)
-                    ->where('title', $title)
-                    ->with('user', 'genres', 'awards.contest')
-                    ->withCount('likes')
-                    ->firstorFail();
-                return response()->json($amv, 200);
-            } catch (ModelNotFoundException $e) {
-                return response()->json(['error' => 'An AMV with that title could not be found.'], 404);
-            }
-        }
+            return response()->json(['error' => 'Please filter by user ID.'], 400);
 
-        // Otherwise return all AMVs of specified user
-        $amvs = AMV::where('user_id', $user)
-            ->with('user', 'genres', 'awards.contest')
-            ->withCount('likes')
-            ->get();
-        return response()->json($amvs, 200);
+        // If user is requesting his own AMVs, return unpublished ones too
+        if (Auth::check() && $request->user()->id == $user) {
+            return response()->json($service->index($user, false, true), 200);
+        }
+        // Else only published ones
+        return response()->json($service->index($user), 200);
     }
 
     /**
@@ -60,16 +45,17 @@ class AMVController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id) 
+    public function show(AMVService $service, Request $request, $id)
     {
-        try {
-            $amv = AMV::where('id', $id)
-                ->with('user', 'genres', 'awards.contest')
-                ->withCount('likes')
-                ->firstOrFail();
+        if ($request->get('check') && $request->get('check') === 'true') {
+            $amv = $service->get($id, true, true, $request);
+            if (!$amv) return response()->json(['error' => 'AMV could not be found'], 404);
+            if (is_int($amv) && $amv === 401) return response()->json(['error' => 'Unauthorized. Not the owner of this AMV.'], 401);
             return response()->json($amv, 200);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'AMV could not be found'], 404);
+        } else {
+            $amv = $service->get($id, true);
+            if (!$amv) return response()->json(['error' => 'AMV could not be found'], 404);
+            return response()->json($amv, 200);
         }
     }
 
@@ -79,71 +65,10 @@ class AMVController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request) 
+    public function store(AMVRequest $request, AMVService $amvService, UserService $userService)
     {
-        // Validate request input data
-        $this->validate($request, [
-            'title' => 'required',
-            'music' => 'required',
-            'animes' => 'required',
-            'poster' => 'image|mimes:jpeg,png,jpg|max:500',
-            'bg' => 'image|mimes:jpeg,png,jpg|max:500',
-            'video' => 'url',
-            'download' => 'url'
-        ]);
-
-        // Create a new AMV model with the input data that doesn't need to be further processed
-        $amv = AMV::create([
-            'title' => $request->title,
-            'animes' => $request->animes,
-            'music' => $request->music,
-            'description' => $request->description,
-            'video' => $request->video,
-            'videoHost' => $request->videoHost,
-            'videoCode' => $request->videoCode,
-            'download' => $request->download,
-            'driveId' => $request->driveId,
-            'published' => false,
-            'user_id' => $request->user()->id
-        ]);
-
-
-        $published = $request->input('published');
-        // JSON boolean is only read as a string :(, need to check further
-        if ($published === 'true') $published = true;
-        else $published = false;
-
-        $amv->published = $published;
-
-        // If a poster has been uploaded, store it and link it to the AMV.
-        if ($request->hasFile('poster')) {
-            $prefix = $amv->url . '_';
-            $filename = uniqid($prefix).'.'.$request->poster->extension();
-            $request->poster->move(public_path('images'), $filename);
-            $amv->poster = '/images/' . $filename;
-        }
-
-        // If a background has been uploaded, store it and link it to the AMV.
-        if ($request->hasFile('bg')) {
-            $prefix = $amv->url . '_bg_';
-            $filename = uniqid($prefix).'.'.$request->bg->extension();
-            $request->bg->move(public_path('images'), $filename);
-            $amv->bg = '/images/' . $filename;
-        }
-
-        // If a list of genres has been specified, link them to the AMV. 
-        if ($request->genres) {
-            $genres = json_decode($request->genres);
-            foreach($genres as $genre) {
-                $amv->genres()->attach($genre);
-            }
-        }
-
-        // Save new AMV object to DB
-        $amv->save();
-        $user = User::find($request->user()->id);
-        $amv->user = $user;
-    
+        $amv = $amvService->store($request);
+        $amv->user = $userService->get($request->user()->id);
         return response()
             ->json($amv, 201)
             ->header('Location', '/amvs/'.$amv->id);
@@ -156,62 +81,19 @@ class AMVController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(AMVRequest $request, AMVService $service, $id)
     {
-        // Validate request input data
-        $this->validate($request, [
-            'title' => 'required',
-            'music' => 'required',
-            'animes' => 'required',
-            'poster' => 'image|mimes:jpeg,png,jpg|max:500',
-            'bg' => 'image|mimes:jpeg,png,jpg|max:500'
-        ]);
 
-        // Create a new AMV model with the input data that doesn't need to be further processed
-        $amv = AMV::where('id', $id)->first();
-        
-        if ($amv->user_id !== $request->user()->id) {
-            return response()
-                ->json(['error' => "Unauthorized. Not the owner of this AMV."], 401);
+        $amv = $service->update($request, $id);
+        if (!is_int($amv)) return response()->json($amv, 200);
+        switch($amv) {
+            case 401:
+                return response()->json(['error' => "Unauthorized. Not the owner of this AMV."], 401);
+            case 404:
+                return response()->json(['error' => 'AMV could not be found'], 404);
+            default:
+                return response()->json(['error' => 'Server Error'], 500);
         }
-
-        $published = $request->input('published');
-        // JSON boolean is only read as a string :(, need to check further
-        if ($published === 'true') $published = true;
-        else $published = false;
-
-        $amv->published = $published;
-
-        // If a poster has been uploaded, store it and link it to the AMV.
-        if ($request->hasFile('poster')) {
-            $prefix = $amv->url . '_';
-            $filename = uniqid($prefix).'.'.$request->poster->extension();
-            $request->poster->move(public_path('images'), $filename);
-            $amv->poster = '/images/' . $filename;
-        }
-
-        // If a background has been uploaded, store it and link it to the AMV.
-        if ($request->hasFile('bg')) {
-            $prefix = $amv->url . '_bg_';
-            $filename = uniqid($prefix).'.'.$request->bg->extension();
-            $request->bg->move(public_path('images'), $filename);
-            $amv->bg = '/images/' . $filename;
-        }
-
-        // If a list of genres has been specified, link them to the AMV. 
-        if ($request->genres) {
-            $genres = json_decode($request->genres);
-            // First, detach all old genres
-            $amv->genres()->detach();
-            // Then attach the newly specified ones
-            $amv->genres()->attach($genres);
-        }
-
-        $input = $request->except(['published', 'poster', 'genres', 'bg', 'user_id']);
-        $amv->fill($input);
-        $amv->save();
-    
-        return response()->json($amv, 200);
     }
 
     /**
@@ -221,16 +103,18 @@ class AMVController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy(Request $request, AMVService $service, $id)
     {
-        $amv = AMV::find($id);
-        if ($amv->user_id !== $request->user()->id) {
-            return response()
-                ->json(['error' => "Unauthorized. Not the owner of this AMV."], 401);
+        $result = $service->destroy($request, $id);
+        if (!is_int($result)) return response()->json("{}", 200);
+        switch($result) {
+            case 401:
+                return response()->json(['error' => "Unauthorized. Not the owner of this AMV."], 401);
+            case 404:
+                return response()->json(['error' => 'AMV could not be found'], 404);
+            default:
+                return response()->json(['error' => 'Server Error'], 500);
         }
-
-        $amv->delete();
-        return response()->json("{}", 200);
     }
     
 }

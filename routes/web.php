@@ -43,7 +43,7 @@ Route::group(['middleware' => 'auth'], function () {
 
 Route::group(['prefix' => 'api'], function () {
 
-    // Ressource: User
+    // Resource: User
     Route::get('/users/{id}', 'UserController@show');
     Route::post('/users', 'UserController@store');
     Route::group(['middleware' => 'auth'], function () {
@@ -52,36 +52,44 @@ Route::group(['prefix' => 'api'], function () {
         Route::delete('/users/{id}', 'UserController@destroy');
     });
 
-    // Ressource: AMV
+    // Resource: AMV
     Route::get('/amvs', 'AMVController@index');
     Route::get('/amvs/{id}', 'AMVController@show');
     Route::group(['middleware' => 'auth'], function () {
         Route::post('/amvs', 'AMVController@store');
         Route::put('/amvs/{id}', 'AMVController@update');
         Route::delete('/amvs/{id}', 'AMVController@destroy');
+        Route::post('/amvs/{id}/likes', 'LikeController@store');
+        Route::delete('/amvs/{id}/likes', 'LikeController@destroy');
     });
 
-    // Ressource: Award
+    // Resource: Award
     Route::group(['middleware' => 'auth'], function () {
         Route::post('/awards', 'AwardController@store');
         Route::put('/awards/{id}', 'AwardController@update');
         Route::delete('/awards/{id}', 'AwardController@destroy');
     });
-
-    // Ressource: Like
-    Route::group(['middleware' => 'auth'], function() {
-        Route::post('/likes', 'LikeController@store');
-        Route::delete('/likes/{id}', 'LikeController@destroy');
-    });
     
-    // Ressource: Genre
+    // Resource: Genre
     Route::get('/genres', function() {
         return response()->json(Genre::all(), 200);
     });
 
-    // Ressource: Contest
-    Route::get('/contests', function() {
-        return response()->json(Contest::all(), 200);
+    // Resource: Contest
+    Route::get('/contests', 'ContestController@index');
+    Route::get('/contests/{id}', 'ContestController@show');
+    Route::group(['middleware' => 'auth'], function () {
+        Route::post('/contests', 'ContestController@store');
+        Route::put('/contests/{id}', 'ContestController@update');
+        Route::delete('/contests/{id}', 'ContestController@destroy');
+    });
+
+    // Resource: Contest User Roles
+    Route::get('/users/{id}/contests', 'UserController@contestIndex');
+    Route::get('/contests/{id}/users', 'ContestController@getUsers');
+    Route::group(['middleware' => 'auth'], function() {
+        Route::post('/contests/{id}/users', 'ContestController@storeUser');
+        Route::delete('contests/{id}/users/{userId}', 'ContestController@destroyUser');
     });
 });
 

@@ -52,7 +52,7 @@ body.dashboard {
         margin-top: 10px;
     }
 
-.dashboard__index {
+.dashboard__index, .dashboard__contests {
     h3 + .button {
         float: right;
         margin-top: 0.85em;
@@ -91,13 +91,11 @@ img.preview {
     max-width: 100%;
 }
 
-.dashboard__overview {
-    p:first-of-type {
-        font-family: $font-primary;
-        font-weight: 300;
-        color: $color-text-light;
-        margin-top: 1em;
-    }
+p.info {
+    font-family: $font-primary;
+    font-weight: 300;
+    color: $color-text-light;
+    margin-top: 1em;
 }
 
 .multiselect__tags {
@@ -145,7 +143,7 @@ img.preview {
 
 
 .dashboard__title {
-    background-color: white;
+    background-color: $color-white;
     height: 90px;
     width: 100%;
     border-bottom: 1px solid #e4e4e4;
@@ -227,15 +225,42 @@ img.preview {
     }
     .button--transparent .material-icons {
         vertical-align: middle;
-        &.high {
+        &.high, &.low {
             font-size: 1.3rem;
-            margin-bottom: 1px;
+        }
+        &.high {
+            margin-bottom: 2px;
         }
     }
     .card-image img {
         height: 170px !important;
         width: 129px !important;
         object-fit: cover;
+    }
+
+    &.card--blue {
+        background-color: $color-secondary;
+        h2 {
+            color: #fff;
+            margin-bottom: 20px;
+        }
+        p {
+            color: $color-bg;
+        }
+
+        .card-content {
+            padding: 10px 20px 15px 20px;
+        }
+    }
+    &.card--info {
+        background-color: $color-white;
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .card-content {
+            padding: 10px 20px 15px 20px;
+        }
     }
 }
 

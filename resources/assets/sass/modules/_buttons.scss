@@ -90,6 +90,16 @@
             }
         }
 
+        &.button--white {
+            color: #fff;
+            border: 1px solid #fff;
+
+            &:hover, &:active, &:focus {
+                background-color: #fff;
+                color: $color-secondary;
+            }
+        }
+
         .material-icons {
                 font-size: 1.4rem;
                 vertical-align: middle;

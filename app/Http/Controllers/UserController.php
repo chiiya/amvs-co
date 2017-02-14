@@ -2,12 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\UserService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use App\User;
-use App\AMV;
-use App\Http\Requests;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Http\Requests\UserRequest;
 use Illuminate\Support\Facades\Auth;
 
 /*
@@ -19,32 +16,38 @@ use Illuminate\Support\Facades\Auth;
 | authenticated sessions. For stateless requests see the Api\UserController
 |
 */
+
+/**
+ * Class UserController
+ * @package App\Http\Controllers
+ */
 class UserController extends Controller
 {
 
     /**
      * Display the specified user.
+     * METHOD: GET
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @param   \Illuminate\Http\Request  $request
+     * @param   \App\Services\UserService $service
+     * @param   int $id
+     * @return  \Illuminate\Http\Response
      */
-    public function show(Request $request, $id) 
+    public function show(Request $request, UserService $service, $id)
     {
-        try {
-            $user = User::findOrFail($id);
-            // If the user is requesting his own data, make email field visible
-            if (Auth::check() && $request->user()->id == $id) {
-                return response()->json($user->makeVisible('email'), 200);
-            }
-            return response()->json($user, 200);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(["User could not be found."], 404);
+        $user = $service->get($id);
+        if (!$user) return response()->json(["User could not be found."], 404);
+
+        // If user is requesting his own information, make hidden fields visible
+        if (Auth::check() && $request->user()->id == $user->id) {
+            return response()->json($user->makeVisible('email'), 200);
         }
+        return response()->json($user, 200);
     }
 
     /**
      * Get the currently authenticated user.
+     * METHOD: GET
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -57,23 +60,15 @@ class UserController extends Controller
     
     /**
      * Store a new User instance in database.
+     * METHOD: POST
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param   \App\Http\Requests\UserRequest  $request
+     * @param   \App\Services\UserService $service
+     * @return  \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(UserRequest $request, UserService $service)
     {
-        $this->validate($request, [
-            'name' => 'required|unique:users|alpha_dash|max:30',
-            'email' => 'required|unique:users|email',
-            'password' => 'required'
-        ]);
-        $user = User::create([
-            'name' => $request->input('name'),
-            'email' => $request->input('email'),
-            'password' => Hash::make($request->input('password'))
-        ]);
-
+        $user = $service->store($request->all());
         return response()
             ->json($user, 201)
             ->header('Location', '/users/'.$user->id);
@@ -81,72 +76,61 @@ class UserController extends Controller
 
     /**
      * Update an existing User entry.
+     * METHOD: PUT
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @param   \App\Http\Requests\UserRequest   $request
+     * @param   \App\Services\UserService $service
+     * @param   int $id
+     * @return  \Illuminate\Http\Response
      */
-    public function update(Request $request, $id) 
+    public function update(UserRequest $request, UserService $service, $id)
     {
-        $user = User::where('id', $id)->firstOrFail();
-
-        // Check if user is authorized to update the requested user.
-        if ($request->user()->id != $id) {
-            return response()
-                ->json(['error' => "Unauthorized."], 401);
+        $user = $service->update($request, $id);
+        if (!is_int($user)) return response()->json($user, 200);
+        switch($user) {
+            case 401:
+                return response()->json(['error' => "Unauthorized."], 401);
+            case 404:
+                return response()->json(['error' => 'User could not be found'], 404);
+            default:
+                return response()->json(['error' => 'Server Error'], 500);
         }
-        // If a _new_ email has been provided, fully validate it.
-        if($request->email !== $user->email) {
-            $this->validate($request, [
-                'email' => 'required|unique:users|email'
-            ]);
-        } else {
-             $this->validate($request, [
-                'avatar' => 'image|mimes:jpeg,png,jpg|max:150'
-            ]);
-        }
-
-        // If a new password has been provided, hash it and update user.
-        if ($request->password) {
-            $user->password = Hash::make($request->password);
-        }
-
-        // If an avatar has been uploaded, store it and link it to user.
-        if ($request->hasFile('avatar')) {
-            $prefix = strtolower($user->name) . '_';
-            $filename = uniqid($prefix).'.'.$request->avatar->extension();
-            $request->avatar->move(public_path('images'), $filename);
-            $oldavatar = public_path() . $user->avatar;
-            if (file_exists ($oldavatar)) unlink($oldavatar);
-            $user->avatar = '/images/' . $filename;
-        }
-
-        // Update all other properties
-        $input = $request->except(['avatar', 'password']);
-        $user->fill($input);
-
-        // Save new user object to DB
-        $user->save();
-
-        return response()->json($user, 200);
     }
 
     /**
      * Delete an existing user from database.
+     * METHOD: DELETE
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int $id
-     * @return \Illuminate\Http\Response
+     * @param   \App\Http\Requests\UserRequest   $request
+     * @param   \App\Services\UserService $service
+     * @param   int $id
+     * @return  \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy(Request $request, UserService $service, $id)
     {
-        $user = User::find($id);
-        if ($user->id !== $request->user()->id) {
-            return response()
-                ->json(['error' => "Unauthorized."], 401);
+        $result = $service->destroy($request, $id);
+        if (!is_int($result)) return response()->json("{}", 200);
+        switch($result) {
+            case 401:
+                return response()->json(['error' => "Unauthorized."], 401);
+            case 404:
+                return response()->json(['error' => 'User could not be found'], 404);
+            default:
+                return response()->json(['error' => 'Server Error'], 500);
         }
+    }
 
-        $user->delete();
-        return response()->json("{}", 200);
+    /**
+     * Get an index of all contests the user is part of, and his respective roles.
+     * METHOD: GET
+     *
+     * @param   \App\Services\UserService $service
+     * @param   int $id
+     * @return  \Illuminate\Http\Response
+     */
+    public function contestIndex(UserService $service, $id)
+    {
+        $contests = $service->getContests($id);
+        return response()->json($contests, 200);
     }
 }

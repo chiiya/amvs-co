@@ -6,6 +6,8 @@ use App\AMV;
 use App\Contest;
 use App\Genre;
 use App\Award;
+use App\Role;
+use App\UserRole;
 
 class InitialSeeder extends Seeder
 {
@@ -32,7 +34,7 @@ class InitialSeeder extends Seeder
             'description' => "This was my submission for the Animaco 2016 Exclusive AMV contest. Sora No Woto is one of my favorite animes, and while there are some decent AMVs for it out there, I felt like none really captured the idea of hope in a hopeless setting, which the anime so strongly conveyed. So I decided to make my own. I'm still not very happy with how it turned out, and I feel like I have gone a bit overboard with the drama aspect, given how the anime generally has a very positive and innocent vibe to it (for the most part). I'm blaming the song for that one!",
             'poster' => '/img/poster/reliance.png',
             'bg' => '/img/bgs/reliance_bg.jpg',
-            'video' => '156942975',
+            'video' => 'https://www.youtube.com/watch?v=DTAYxBIeU14',
             'published' => false,
             'user_id' => 1
         ]);
@@ -90,5 +92,6 @@ class InitialSeeder extends Seeder
 
         $reliance->genres()->attach(1);
 
+        $user->contests()->attach([$contest->id => ['role' => 1], $contest2->id => ['role' => 3]]);
     }
 }

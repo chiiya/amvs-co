@@ -41,6 +41,44 @@ class User extends Authenticatable
      */
     public function likes()
     {
-        return $this->hasMany('App\Like', 'user_id');
+        return $this->belongsToMany('App\AMV', 'likes', 'user_id', 'amv_id');
+    }
+
+    /**
+     * Many-to-Many Relationship: One User has (or takes part in) many Contests, with pivot indicating their role:
+     * 1: Admin
+     * 2: Judge
+     * 3: Participant
+     */
+    public function contests()
+    {
+        return $this->belongsToMany('App\Contest')->withPivot('role');
+    }
+
+    /**
+     * Retrieve all contests where this user is admin
+     */
+    public function contestsAsAdmin()
+    {
+        $contests = $this->contests;
+        return $contests->wherePivot('role', 1);
+    }
+
+    /**
+     * Retrieve all contests where this user is judge
+     */
+    public function contestsAsJudge()
+    {
+        $contests = $this->contests;
+        return $contests->wherePivot('role', 2);
+    }
+
+    /**
+     * Retrieve all contests where this user is participant
+     */
+    public function contestsAsParticipant()
+    {
+        $contests = $this->contests;
+        return $contests->wherePivot('role', 3);
     }
 }

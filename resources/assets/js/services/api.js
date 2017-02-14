@@ -21,6 +21,12 @@ export default {
             .catch((error) => Promise.reject(error));
     },
 
+    getUserContests(id) {
+        return Vue.http.get(`/api/users/${id}/contests`)
+            .then((response) => Promise.resolve(response.body))
+            .catch((error) => Promise.reject(error));
+    },
+
     /**
      * Resource: AMV
      * GET, POST, PUT, DELETE
@@ -33,7 +39,7 @@ export default {
     },
 
     getAMV(id) {
-        return Vue.http.get(`/api/amvs/${id}`)
+        return Vue.http.get(`/api/amvs/${id}?check=true`)
             .then((response) => Promise.resolve(response.body))
             .catch((error) => Promise.reject(error));
     },

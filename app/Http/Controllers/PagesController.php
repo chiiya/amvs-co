@@ -1,14 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Services\AMVService;
+use App\Services\UserService;
 use Auth;
 use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use App\AMV;
-use App\User;
-use App\Like;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -25,12 +21,10 @@ class PagesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function showLogin() 
+    public function showLogin(AMVService $service)
     {
         if (Auth::check()) return redirect()->route('dashboard');
-        $amvs = AMV::where('published', true)
-            ->orderBy('created_at', 'DESC')
-            ->with('user')->simplePaginate(9);
+        $amvs = $service->index($user = null, $paginated = true);
         return view('login', [
             'amvs' => $amvs
         ]);
@@ -54,35 +48,26 @@ class PagesController extends Controller
      * @param  String $amv: url-property of the AMV (e.g. 'An Etude' -> 'an_etude')
      * @return \Illuminate\Http\Response
      */
-    public function showAMV($name, $amv)
+    public function showAMV(UserService $userService, AMVService $amvService, $name, $amvUrl)
     {
-        try {
-            $user = User::where('name', $name)->firstOrFail();
-            $amv = AMV::where('user_id', $user->id)
-                ->where('url', $amv)
-                ->with('user', 'genres', 'awards')
-                ->withCount('likes')
-                ->firstOrFail();
-            $likedByUser = false;
-            $like = null;
-            if (Auth::check()) {
-                $like = Like::where('amv_id', $amv->id)->where('user_id', Auth::user()->id)->first();
-                if ($like !== null) {
-                    $likedByUser = true;
-                }
-            }
-            if ($amv->published) {
-                return view('amv', [
-                    'amv' => $amv,
-                    'user' => $user,
-                    'likedByUser' => $likedByUser,
-                    'like' => $like
-                ]);
-            }
-            return view('404');       
-        } catch (ModelNotFoundException $e) {
-            return view('404');
+        $user = $userService->getByName($name);
+        if (!$user) return view('404');
+        $amv = $amvService->find($user->id, $amvUrl);
+        if (!$amv) return view('404');
+
+        $likedByUser = false;
+        // If user is logged in, check if he has liked the AMV
+        if (Auth::check()) {
+            $likedByUser = $amvService->likedByUser($amv->id, Auth::user()->id);
         }
+        if ($amv->published) {
+            return view('amv', [
+                'amv' => $amv,
+                'user' => $user,
+                'likedByUser' => $likedByUser
+            ]);
+        }
+        return view('404');
     }
 
     /**
@@ -91,25 +76,19 @@ class PagesController extends Controller
      * @param  String $name: username
      * @return \Illuminate\Http\Response
      */
-    public function showUser($name)
+    public function showUser(UserService $userService, AMVService $amvService, $name)
     {
-        try {
-            $user = User::where('name', $name)->firstOrFail();
-            $amvs = AMV::where('user_id', $user->id)
-                ->where('published', true)
-                ->orderBy('created_at','DESC')
-                ->with('user', 'genres', 'awards')
-                ->withCount('likes')
-                ->get();
-            $latest = $amvs->first();
-            return view('profile', [
-                'user' => $user,
-                'amvs' => $amvs,
-                'latest' => $latest
-            ]);
-        } catch (ModelNotFoundException $e) {
-            return view('404');
-        }
+        $user = $userService->getByName($name);
+        if (!$user) return view('404');
+        $amvs = $amvService->index($user->id);
+        if (!$amvs) return view('404');
+
+        $latest = $amvs->first();
+        return view('profile', [
+            'user' => $user,
+            'amvs' => $amvs,
+            'latest' => $latest
+        ]);
     }
 
     /**
@@ -118,7 +97,7 @@ class PagesController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function showDashboard(Request $request) 
+    public function showDashboard(Request $request)
     {
         return view('dashboard', [
             'user' => $request->user()

@@ -28,6 +28,7 @@
             </li>
             <li><router-link class="elem" to="/dashboard"><i class="material-icons">home</i> Dashboard</router-link></li>
             <li><router-link class="elem" to="/dashboard/amvs"><i class="material-icons">movie</i> My AMVS</router-link></li>
+            <li><router-link class="elem" to="/dashboard/contests"><i class="material-icons">star</i> Contests</router-link></li>
         </ul>
     </nav>
     <main class="dashboard__content">

@@ -1,36 +1,39 @@
-const vm = new Vue({
-    el: '#app',
+const   likes = document.getElementsByClassName('like'),
+        unlikes = document.getElementsByClassName('unlike'),
+        unfilled = document.getElementsByClassName('amv__like--unfilled'),
+        filled = document.getElementsByClassName('amv__like--filled')
+        data = {
+            amv_id : document.head.querySelector("[name=amv]").id
+        };
 
-    data: {
-        error: '',
-        like: {}
-    },
-
-    methods: {
-
-        like() {
-            document.querySelector(".amv__like--unfilled").style.display="none";
-            document.querySelector(".amv__like--filled").style.display="block";
-            const data = {
-                amv_id: document.head.querySelector("[name=amv]").id
-            };
-            this.$http.post('/api/likes', data, {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }).then((response) => {
-                this.like = response.body;
-            });
-        },
-
-        unlike() {
-            const filledDiv = document.querySelector(".amv__like--filled");
-            filledDiv.style.display="none";
-            const likeId = this.like.id || filledDiv.getAttribute('likeid');
-            document.querySelector(".amv__like--unfilled").style.display="block";
-
-            this.$http.delete(`/api/likes/${likeId}`);
+var like = function() {
+    Array.from(unfilled).forEach(function(element) {
+      element.style.display="none";
+    });
+    Array.from(filled).forEach(function(element) {
+      element.style.display="block";
+    });
+    Vue.http.post(`/api/amvs/${data.amv_id}/likes`, data, {
+        headers: {
+            'Content-Type': 'application/json'
         }
+        });
+}
 
-    }
-})
+var unlike = function() {
+    Array.from(unfilled).forEach(function(element) {
+      element.style.display="block";
+    });
+    Array.from(filled).forEach(function(element) {
+      element.style.display="none";
+    });
+    Vue.http.delete(`/api/amvs/${data.amv_id}/likes`);
+}
+
+Array.from(likes).forEach(function(element) {
+      element.addEventListener('click', like);
+});
+
+Array.from(unlikes).forEach(function(element) {
+      element.addEventListener('click', unlike);
+});

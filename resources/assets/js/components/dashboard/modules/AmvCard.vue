@@ -29,7 +29,7 @@
                     <a class="button button--square button--danger button--transparent"
                         @click="deleteAmv" v-bind:disabled="deleteButtonDisabled" v-bind:class="deleteButtonClasses">
                         {{ deleteButtonStatus }}
-                        <i v-if="!deleteButtonDisabled" class="material-icons">close</i>  
+                        <i v-if="!deleteButtonDisabled" class="material-icons low">close</i>  
                     </a>
                 </div>
             </div>

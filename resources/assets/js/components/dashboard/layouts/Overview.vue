@@ -1,6 +1,6 @@
 <template>
     <div class="is-right dashboard__overview">
-        <p v-show="!loading">Hello {{ name }}. Nothing new! Start following users to receive updates on new AMVs.</p>
+        <p v-show="!loading" class="info">Hello {{ name }}. Nothing new! Start following users to receive updates on new AMVs.</p>
         <loading></loading>
     </div>
 </template>

@@ -24,6 +24,8 @@ const store = new Vuex.Store({
          * @type {Array}
          */
         contests: [],
+        userContests: {
+        },
         /**
          * Shorthand for all months. Necessary for reformatting AMV creation date
          * @type {Array}
@@ -104,7 +106,7 @@ const store = new Vuex.Store({
                     })
                     .catch((error) => {
                         commit('SET_LOADING', { val: false });
-                        commit('FAILURE', error)
+                        return Promise.reject(error);
                     });
         },
 
@@ -210,6 +212,24 @@ const store = new Vuex.Store({
                     commit('DELETE_AMV', id);
                 })
                 .catch((error) => Promise.reject(error));
+        },
+
+        FETCH_USER_CONTESTS: ({dispatch, commit, state}) => {
+            const isEmpty = Object.keys(state.userContests).length === 0
+            if (isEmpty) commit('SET_LOADING', { val: true });
+            return !isEmpty
+                ? Promise.resolve(state.userContests)
+                : dispatch('FETCH_USER').then(() => {
+                    api.getUserContests(state.user.id)
+                        .then((response) => {
+                            commit('SET_USER_CONTESTS', response);
+                            commit('SET_LOADING', { val: false });
+                        })
+                        .catch((error) => {
+                            commit('SET_LOADING', { val: false });
+                            commit('FAILURE', error)
+                        })
+                })
         }
 
     },
@@ -290,6 +310,10 @@ const store = new Vuex.Store({
          */
         SET_PARENT: (state, parent) => {
             state.parent = parent;
+        },
+
+        SET_USER_CONTESTS: (state, contests) => {
+            state.userContests = contests;
         }
     },
 

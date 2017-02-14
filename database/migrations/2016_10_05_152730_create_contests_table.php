@@ -17,6 +17,12 @@ class CreateContestsTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->smallInteger('year');
+            $table->text('description')->nullable();
+            $table->text('rules')->nullable();
+            $table->date('deadline')->nullable();
+            $table->date('event_start')->nullable();
+            $table->date('event_end')->nullable();
+
             $table->timestamps();
         });
     }

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateLikesTable extends Migration
+class CreateContestUserTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,14 @@ class CreateLikesTable extends Migration
      */
     public function up()
     {
-        Schema::create('likes', function (Blueprint $table) {
+        Schema::create('contest_user', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('amv_id')->unsigned();
             $table->integer('user_id')->unsigned();
-            $table->foreign('amv_id')->references('id')->on('amvs')->onDelete('cascade');
+            $table->integer('contest_id')->unsigned();
+            $table->integer('role')->unsigned();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->unique(['amv_id', 'user_id'], 'unique_like');
+            $table->foreign('contest_id')->references('id')->on('contests')->onDelete('cascade');
+            $table->unique(['user_id', 'role', 'contest_id'], 'unique_role');
         });
     }
 
@@ -30,6 +31,6 @@ class CreateLikesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('likes');
+        Schema::dropIfExists('contest_user');
     }
 }

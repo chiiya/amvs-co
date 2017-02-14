@@ -59,6 +59,6 @@ class AMV extends Model
 
     public function likes() 
     {
-        return $this->hasMany('App\Like', 'amv_id');
+        return $this->belongsToMany('App\User', 'likes', 'amv_id', 'user_id');
     }
 }

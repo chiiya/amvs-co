@@ -11,7 +11,7 @@ class Award extends Model
     public $timestamps = false;
 
     /**
-     * One-To-Many Relationshipm(Inverse): One Award belongs to one AMV.
+     * One-To-Many Relationship (Inverse): One Award belongs to one AMV.
      */
     public function amv() {
         return $this->belongsTo('App\AMV', 'amv_id');

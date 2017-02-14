@@ -1,8 +1,9 @@
 <template>
     <section class="dashboard__form is-right">
-        <h3>Edit AMV Awards: {{ updatedAMV.title }} </h3>
         <loading></loading>
-        <div v-show="!loading" class="row">
+        <p v-if="!loading && !authorized" class="info">Unauthorized. Access was denied because you are not the owner of this AMV. Please make sure the URL you entered is correct, or <router-link to="/dashboard/amvs">go back to your AMV Overview</router-link>.</p>
+        <h3 v-if="!loading && authorized">Edit AMV Awards: {{ updatedAMV.title }} </h3>
+        <div v-show="!loading && authorized" class="row">
             <div class="col-xs-12">
                 <transition-group name="contest-list" tag="div" mode="out-in">
                     <contest 
@@ -62,7 +63,8 @@
                 saveButtonDisabled: false,
                 saveButtonStatus: 'Save',
                 cancelButtonStatus: 'Cancel',
-                submitErrors: []
+                submitErrors: [],
+                authorized: true
             }
         },
 
@@ -138,6 +140,7 @@
                     this.updatedAMV = JSON.parse(JSON.stringify(response));
                 })
                 .catch((error) => {
+                    if (error.status === 404 || error.status === 401) this.authorized = false;
                     this.submitErrors.push(error.body)
                 });
         },

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\AMVService;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 use App\Like;
 use App\AMV;
@@ -15,23 +17,12 @@ class LikeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, AMVService $service)
     {
         $input = $request->json()->all();
-        try {
-            $amv = AMV::findOrFail($input['amv_id']);
-
-            $like = Like::create([
-                'amv_id' => $amv->id,
-                'user_id' => $request->user()->id
-            ]);
-
-            return response()->json($like, 201);
-
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'AMV could not be found'], 404);
-        }
-   
+        $result = $service->like($input['amv_id'], $request->user()->id);
+        if (is_int($result) && $result === 404) return response()->json(['error' => 'AMV could not be found'], 404);
+        return response()->json("{}", 201);
     }
 
     /**
@@ -41,16 +32,10 @@ class LikeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy(Request $request, AMVService $service, $id)
     {
-        $input = $request->json()->all();
-        try {
-            $like = Like::findOrFail($id);
-            $like->delete();
-            return response()->json('{}', 200);
-
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'Like could not be found'], 404);
-        }
+        $result = $service->unlike($id, $request->user()->id);
+        if (is_int($result) && $result === 404) return response()->json(['error' => 'AMV could not be found'], 404);
+        return response()->json("{}", 200);
     }
 }
